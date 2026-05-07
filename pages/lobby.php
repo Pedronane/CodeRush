@@ -1,135 +1,140 @@
 <?php
 session_start();
 require_once __DIR__ . '/../includes/functions.php';
-
-if (!isHost()) {
-    header('Location: /CodeRush/login.php');
-    exit();
-}
+if (!isHost()) { header('Location: /CodeRush/login.php'); exit(); }
 
 $partita_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-$partita = $partita_id > 0 ? getPartitaById($partita_id) : null;
+$partita    = $partita_id > 0 ? getPartitaById($partita_id) : null;
+if (!$partita || $partita['host_id'] != $_SESSION['user_id']) { header('Location: /CodeRush/pages/rush.php'); exit(); }
+if ($partita['stato'] !== 'attesa') { header('Location: /CodeRush/pages/game.php?id='.$partita_id); exit(); }
 
-if (!$partita || $partita['host_id'] != $_SESSION['user_id']) {
-    header('Location: /CodeRush/pages/rush.php');
-    exit();
-}
-
-if ($partita['stato'] !== 'attesa') {
-    header('Location: /CodeRush/pages/game.php?id=' . $partita_id);
-    exit();
-}
-
-$pageTitle = 'Lobby — ' . $partita['codice_accesso'];
-require_once __DIR__ . '/../includes/header.php';
+$pageTitle = 'Lobby — '.$partita['codice_accesso'];
 ?>
-<main class="container">
-    <div class="page-header">
-        <h1>Lobby — In attesa di studenti</h1>
-    </div>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= sanitize($pageTitle) ?> — CodeRush</title>
+    <link rel="stylesheet" href="/CodeRush/css/style.css">
+</head>
+<body>
 
-    <div style="display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start;">
+<div class="background-fx" aria-hidden="true">
+    <div class="bfx-grid"></div>
+    <div class="bfx-blob bfx-blob-green"></div>
+    <div class="bfx-blob bfx-blob-blue"></div>
+    <div class="bfx-blob bfx-blob-orange"></div>
+</div>
+<div data-particles="22" style="position:fixed;inset:0;z-index:0;pointer-events:none;"></div>
+
+<div class="lobby-full">
+    <div class="lobby-inner" style="position:relative;z-index:1;">
+
+        <!-- Left: code + students -->
         <div>
-            <div class="card" style="text-align: center;">
-                <div class="card-title">Codice partita</div>
-                <p style="color: var(--text-muted); margin-bottom: 8px;">Gli studenti entrano usando questo codice</p>
-                <div class="game-code"><?= sanitize($partita['codice_accesso']) ?></div>
+            <p class="lobby-game-code-label" style="animation:fade-up .3s ease-out both;">Codice partita</p>
+            <div class="game-code" style="animation:fade-up .4s ease-out both;"><?= sanitize($partita['codice_accesso']) ?></div>
+            <p style="color:var(--muted-foreground);font-size:14px;margin-top:12px;animation:fade-up .45s ease-out both;">
+                Condividi questo codice con la classe. Gli studenti appariranno qui sotto.
+            </p>
+
+            <div class="lobby-count" id="count-display" style="animation:fade-up .5s ease-out both;">
+                <span class="lobby-count-num" id="count-num">0</span>
+                <span style="font-size:14px;color:var(--muted-foreground);">studenti connessi</span>
             </div>
 
-            <div class="card">
-                <div class="card-title" style="display: flex; justify-content: space-between;">
-                    <span>Studenti connessi</span>
-                    <span id="count-badge" class="badge badge-host">0 studenti</span>
-                </div>
-                <div id="lobby-grid" class="lobby-grid">
-                    <div style="color: var(--text-muted); text-align: center; grid-column: 1/-1; padding: 24px;">
-                        In attesa...
-                    </div>
-                </div>
-            </div>
-
-            <div style="text-align: center; margin-top: 16px;">
-                <button
-                    id="btnStart"
-                    class="btn btn-success"
-                    style="font-size: 18px; padding: 14px 48px;"
-                    disabled
-                    onclick="startGame()"
-                >
-                    START
-                </button>
-                <p id="start-hint" style="color: var(--text-muted); font-size: 13px; margin-top: 8px;">
-                    Servono almeno 2 studenti per iniziare.
+            <div id="lobby-grid" class="lobby-grid">
+                <p style="color:var(--muted-foreground);grid-column:1/-1;text-align:center;padding:40px 0;">
+                    In attesa che gli studenti si uniscano<span id="dots" style="animation:pulse-soft 1s ease-in-out infinite;display:inline-block;">...</span>
                 </p>
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-title">Dettagli partita</div>
-            <div style="display: flex; flex-direction: column; gap: 12px;">
-                <div>
-                    <div class="form-label">Consegna</div>
-                    <div><?= sanitize($partita['domanda_nome']) ?></div>
+        <!-- Right: info + start -->
+        <aside>
+            <div class="lobby-info-card">
+                <p class="lobby-info-title">Info partita</p>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    <?php foreach ([
+                        ['Consegna',      $partita['domanda_nome']],
+                        ['Linguaggio',    $partita['linguaggio_nome']],
+                        ['Classe',        $partita['anno'].$partita['sezione'].' '.$partita['indirizzo']],
+                        ['Tempo lettura', $partita['tempo_lettura'].'s'],
+                        ['Tempo turno',   $partita['tempo_turno'].'s'],
+                    ] as $row): ?>
+                    <div class="info-row">
+                        <span class="info-label"><?= $row[0] ?></span>
+                        <span class="info-val" <?= $row[0]==='Linguaggio' ? 'style="color:var(--brand-green);"' : '' ?>><?= sanitize($row[1]) ?></span>
+                    </div>
+                    <?php endforeach; ?>
                 </div>
-                <div>
-                    <div class="form-label">Linguaggio</div>
-                    <div><?= sanitize($partita['linguaggio_nome']) ?></div>
-                </div>
-                <div>
-                    <div class="form-label">Classe</div>
-                    <div><?= sanitize($partita['anno'] . $partita['sezione'] . ' ' . $partita['indirizzo']) ?></div>
-                </div>
-                <div>
-                    <div class="form-label">Tempo lettura</div>
-                    <div><?= $partita['tempo_lettura'] ?> secondi</div>
-                </div>
-                <div>
-                    <div class="form-label">Tempo per turno</div>
-                    <div><?= $partita['tempo_turno'] ?> secondi</div>
-                </div>
+                <?php if ($partita['domanda_testo']): ?>
+                <p style="margin-top:12px;font-size:12px;color:var(--muted-foreground);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">
+                    <?= sanitize($partita['domanda_testo']) ?>
+                </p>
+                <?php endif; ?>
             </div>
-        </div>
+
+            <button
+                id="btnStart"
+                class="lobby-start-btn"
+                disabled
+                onclick="startGame()"
+            >
+                ▶ Avvia il Rush
+                <span id="start-hint" style="display:block;font-size:11px;font-weight:600;letter-spacing:.02em;margin-top:4px;opacity:.9;">
+                    Servono almeno 2 studenti
+                </span>
+            </button>
+        </aside>
+
     </div>
-</main>
-</body>
-</html>
+</div>
+
+<script src="/CodeRush/js/script.js"></script>
 <script>
-const PARTITA_ID = <?= $partita_id ?>;
-let currentStudents = [];
+var PARTITA_ID = <?= $partita_id ?>;
+var currentStudents = [];
 
 function pollLobby() {
-    fetch('/CodeRush/api/api.php?action=lobby_state&id=' + PARTITA_ID)
-        .then(r => r.json())
-        .then(data => {
+    fetch('/CodeRush/api/api.php?action=lobby_state&id='+PARTITA_ID)
+        .then(function(r){ return r.json(); })
+        .then(function(data) {
             if (data.stato !== 'attesa') {
-                window.location.href = '/CodeRush/pages/game.php?id=' + PARTITA_ID;
+                window.location.href = '/CodeRush/pages/game.php?id='+PARTITA_ID;
                 return;
             }
             currentStudents = data.studenti || [];
             renderStudenti(currentStudents);
-            const btn = document.getElementById('btnStart');
-            const hint = document.getElementById('start-hint');
+            var btn  = document.getElementById('btnStart');
+            var hint = document.getElementById('start-hint');
+            var countNum = document.getElementById('count-num');
+            countNum.textContent = currentStudents.length;
+            countNum.style.animation = 'none';
+            countNum.offsetHeight;
+            countNum.style.animation = 'pop-in .45s cubic-bezier(.34,1.56,.64,1)';
             if (currentStudents.length >= 2) {
                 btn.disabled = false;
                 hint.textContent = currentStudents.length + ' studenti pronti. Puoi iniziare!';
             } else {
                 btn.disabled = true;
-                hint.textContent = 'Servono almeno 2 studenti (' + currentStudents.length + '/2).';
+                hint.textContent = 'Servono almeno 2 studenti ('+currentStudents.length+'/2).';
             }
         })
-        .catch(() => {});
+        .catch(function(){});
 }
 
 function renderStudenti(studenti) {
-    const grid = document.getElementById('lobby-grid');
-    const badge = document.getElementById('count-badge');
-    badge.textContent = studenti.length + ' student' + (studenti.length === 1 ? 'e' : 'i');
+    var grid = document.getElementById('lobby-grid');
     if (studenti.length === 0) {
-        grid.innerHTML = '<div style="color: var(--text-muted); text-align: center; grid-column: 1/-1; padding: 24px;">In attesa...</div>';
+        grid.innerHTML = '<p style="color:var(--muted-foreground);grid-column:1/-1;text-align:center;padding:40px 0;">In attesa che gli studenti si uniscano...</p>';
     } else {
-        grid.innerHTML = studenti.map(s => {
-            const initials = (s.nome[0] || '') + (s.cognome[0] || '');
-            return '<div class="lobby-student"><div class="initials">' + initials.toUpperCase() + '</div>' + s.nome + ' ' + s.cognome + '</div>';
+        grid.innerHTML = studenti.map(function(s) {
+            var ini = (s.nome[0]||'')+(s.cognome[0]||'');
+            return '<div class="lobby-student">' +
+                '<div class="initials">'+ini.toUpperCase()+'</div>' +
+                '<span class="name">'+s.nome+' '+s.cognome+'</span></div>';
         }).join('');
     }
 }
@@ -137,21 +142,19 @@ function renderStudenti(studenti) {
 function startGame() {
     document.getElementById('btnStart').disabled = true;
     fetch('/CodeRush/api/api.php', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({action: 'start_game', partita_id: PARTITA_ID})
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'start_game',partita_id:PARTITA_ID})
     })
-    .then(r => r.json())
-    .then(data => {
-        if (data.success) {
-            window.location.href = '/CodeRush/pages/game.php?id=' + PARTITA_ID;
-        } else {
-            alert(data.error || 'Errore avvio partita.');
-            document.getElementById('btnStart').disabled = false;
-        }
+    .then(function(r){ return r.json(); })
+    .then(function(data) {
+        if (data.success) window.location.href='/CodeRush/pages/game.php?id='+PARTITA_ID;
+        else { alert(data.error||'Errore avvio partita.'); document.getElementById('btnStart').disabled=false; }
     });
 }
 
 pollLobby();
 setInterval(pollLobby, 3000);
 </script>
+</body>
+</html>

@@ -1,107 +1,90 @@
 <?php
 session_start();
 require_once __DIR__ . '/includes/functions.php';
-
-if (!isLoggedIn()) {
-    header('Location: /CodeRush/login.php');
-    exit();
-}
+if (!isLoggedIn()) { header('Location: /CodeRush/login.php'); exit(); }
 
 $pageTitle = 'Home';
 require_once __DIR__ . '/includes/header.php';
 ?>
 <main class="container">
-    <div class="hero">
-        <h1>CodeRush</h1>
-        <p>Il telefono senza fili della programmazione. Scrivi, passa, migliora.</p>
+
+<?php if (isHost()):
+    $db = getDB();
+    $nClassi   = $db->query('SELECT COUNT(*) FROM classi')->fetchColumn();
+    $stmtD = $db->prepare('SELECT COUNT(*) FROM domande WHERE host_id = ?'); $stmtD->execute([$_SESSION['user_id']]); $nConsegne = $stmtD->fetchColumn();
+    $stmtR = $db->prepare('SELECT COUNT(*) FROM partite WHERE host_id = ? AND stato = "finita"'); $stmtR->execute([$_SESSION['user_id']]); $nRush = $stmtR->fetchColumn();
+    $stmtS = $db->query('SELECT COUNT(*) FROM users WHERE ruolo = "studente"'); $nStudenti = $stmtS->fetchColumn();
+?>
+    <!-- Hero Host -->
+    <div class="hero hero-with-particles">
+        <div data-particles="14" style="position:absolute;inset:0;pointer-events:none;"></div>
+        <span class="hero-tag">Quartier Generale</span>
+        <h1>Benvenuto, <?= sanitize($currentUser['nome']) ?>!</h1>
+        <p>CodeRush trasforma le tue classi in arene di coding a turni. Crea un Rush, condividi il codice partita, vivi la competizione in tempo reale.</p>
     </div>
 
-    <?php if (isHost()): ?>
+    <!-- Stats -->
     <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-value"><?php
-                $db = getDB();
-                echo $db->query('SELECT COUNT(*) FROM classi')->fetchColumn();
-            ?></div>
-            <div class="stat-label">Classi</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value"><?php
-                $stmt = $db->prepare('SELECT COUNT(*) FROM domande WHERE host_id = ?');
-                $stmt->execute([$_SESSION['user_id']]);
-                echo $stmt->fetchColumn();
-            ?></div>
-            <div class="stat-label">Consegne</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value"><?php
-                $stmt = $db->prepare('SELECT COUNT(*) FROM partite WHERE host_id = ? AND stato = "finita"');
-                $stmt->execute([$_SESSION['user_id']]);
-                echo $stmt->fetchColumn();
-            ?></div>
-            <div class="stat-label">Rush completati</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value"><?php
-                $stmt = $db->prepare(
-                    'SELECT COUNT(*) FROM users u
-                     JOIN studente_classe sc ON sc.studente_id = u.id
-                     JOIN classi c ON c.id = sc.classe_id
-                     WHERE u.ruolo = "studente"'
-                );
-                $stmt->execute();
-                echo $stmt->fetchColumn();
-            ?></div>
-            <div class="stat-label">Studenti totali</div>
+        <div class="stat-card"><div class="stat-value"><?= $nClassi ?></div><div class="stat-label">Classi</div></div>
+        <div class="stat-card"><div class="stat-value"><?= $nConsegne ?></div><div class="stat-label">Consegne</div></div>
+        <div class="stat-card"><div class="stat-value"><?= $nRush ?></div><div class="stat-label">Rush completati</div></div>
+        <div class="stat-card"><div class="stat-value"><?= $nStudenti ?></div><div class="stat-label">Studenti totali</div></div>
+    </div>
+
+    <!-- Quick actions -->
+    <div class="card" style="margin-top:8px;">
+        <div class="card-title">Azioni rapide</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <a href="/CodeRush/pages/rush.php"      class="btn-primary-lg">🚀 Nuovo Rush</a>
+            <a href="/CodeRush/pages/consegne.php"  class="btn-ghost">📋 Consegne</a>
+            <a href="/CodeRush/pages/classi.php"    class="btn-ghost">🎓 Classi</a>
+            <a href="/CodeRush/pages/registra.php"  class="btn-ghost">👤 Utenti</a>
         </div>
     </div>
-    <?php endif; ?>
 
+<?php else: ?>
+    <!-- Hero Studente -->
+    <div class="hero hero-with-particles">
+        <div data-particles="14" style="position:absolute;inset:0;pointer-events:none;"></div>
+        <span class="hero-tag">Studente</span>
+        <h1>Ciao, <?= sanitize($currentUser['nome']) ?>!</h1>
+        <p>Quando il tuo professore avvia un Rush ti darà un codice partita: usalo per entrare e iniziare a programmare.</p>
+        <a href="/CodeRush/pages/partecipa.php" class="hero-cta">▸ Partecipa al Rush</a>
+    </div>
+
+    <!-- How it works -->
+    <div style="display:grid;gap:16px;" class="how-steps">
+        <?php foreach ([
+            ['1','Ricevi il codice','Il tuo professore ti darà un codice partita.'],
+            ['2','Leggi la consegna','Hai un timer per capire il problema.'],
+            ['3','Scrivi il tuo turno','Continua il codice del compagno successivo.'],
+        ] as $s): ?>
+        <div class="card" style="display:flex;gap:16px;align-items:flex-start;animation:fade-up .4s ease-out both;">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(61,181,64,.15);color:var(--brand-green);font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><?= $s[0] ?></div>
+            <div><div style="font-weight:700;margin-bottom:4px;"><?= $s[1] ?></div><div style="font-size:13px;color:var(--muted-foreground);"><?= $s[2] ?></div></div>
+        </div>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>
+
+    <!-- Come funziona -->
+    <h2 style="font-size:20px;font-weight:800;margin:32px 0 16px;animation:fade-up .4s ease-out both;">Come funziona</h2>
     <div class="home-features">
+        <?php foreach ([
+            ['📝','La consegna','Ogni Rush parte da una sfida di programmazione. L\'host sceglie il problema, il linguaggio e il livello di difficoltà.'],
+            ['⏱️','I turni','Ogni studente scrive codice per un tempo limitato. Allo scadere del timer, il codice passa al compagno successivo.'],
+            ['🔄','Il passaggio','Come il telefono senza fili: ogni studente lavora sul codice ricevuto, lo capisce e lo migliora.'],
+            ['🤖','La valutazione','Alla fine, un\'AI analizza ogni codice finale e valuta se la soluzione è corretta, parziale o sbagliata.'],
+        ] as $f): ?>
         <div class="feature-card">
-            <div class="feature-icon">📝</div>
-            <div class="feature-title">La consegna</div>
-            <div class="feature-desc">Ogni Rush parte da una sfida di programmazione. L'host sceglie il problema, il linguaggio e il livello di difficoltà.</div>
+            <span class="feature-icon"><?= $f[0] ?></span>
+            <div class="feature-title"><?= $f[1] ?></div>
+            <div class="feature-desc"><?= $f[2] ?></div>
         </div>
-        <div class="feature-card">
-            <div class="feature-icon">⏱️</div>
-            <div class="feature-title">I turni</div>
-            <div class="feature-desc">Ogni studente scrive codice per un tempo limitato. Allo scadere del timer, il codice passa al compagno successivo.</div>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon">🔄</div>
-            <div class="feature-title">Il passaggio</div>
-            <div class="feature-desc">Come il telefono senza fili: ogni studente lavora sul codice ricevuto, lo capisce e lo migliora.</div>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon">🤖</div>
-            <div class="feature-title">La valutazione</div>
-            <div class="feature-desc">Alla fine, un'AI analizza ogni codice finale e valuta se la soluzione è corretta, parziale o sbagliata.</div>
-        </div>
+        <?php endforeach; ?>
     </div>
 
-    <?php if (isStudent()): ?>
-    <div class="card" style="margin-top: 32px;">
-        <div class="card-title">Partecipa a un Rush</div>
-        <p style="color: var(--text-muted); margin-bottom: 16px;">Inserisci il codice fornito dal tuo insegnante per unirti alla partita.</p>
-        <form method="GET" action="/CodeRush/pages/waiting.php" style="display: flex; gap: 10px; max-width: 360px;">
-            <input type="text" name="code" class="form-control" placeholder="Codice partita (es. AB12CD)" maxlength="10" required style="text-transform: uppercase; letter-spacing: 3px; font-family: monospace; font-size: 16px;">
-            <button type="submit" class="btn btn-primary">Entra</button>
-        </form>
-    </div>
-    <?php endif; ?>
-
-    <?php if (isHost()): ?>
-    <div class="card" style="margin-top: 20px;">
-        <div class="card-title">Accesso rapido</div>
-        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-            <a href="/CodeRush/pages/rush.php" class="btn btn-primary">Nuovo Rush</a>
-            <a href="/CodeRush/pages/consegne.php" class="btn btn-secondary">Gestisci consegne</a>
-            <a href="/CodeRush/pages/classi.php" class="btn btn-secondary">Gestisci classi</a>
-            <a href="/CodeRush/pages/registra.php" class="btn btn-secondary">Registra utenti</a>
-        </div>
-    </div>
-    <?php endif; ?>
 </main>
+<script src="/CodeRush/js/script.js"></script>
 </body>
 </html>

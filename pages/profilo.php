@@ -1,146 +1,182 @@
 <?php
 session_start();
 require_once __DIR__ . '/../includes/functions.php';
+if (!isLoggedIn()) { header('Location: /CodeRush/login.php'); exit(); }
 
-if (!isLoggedIn()) {
-    header('Location: /CodeRush/login.php');
-    exit();
-}
-
-$db = getDB();
+$db   = getDB();
 $user = getUserById($_SESSION['user_id']);
-$errors = [];
+$errors  = [];
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
     if ($action === 'update_info' && isHost()) {
-        $nome = trim($_POST['nome'] ?? '');
+        $nome    = trim($_POST['nome']    ?? '');
         $cognome = trim($_POST['cognome'] ?? '');
-        if (empty($nome)) {
-            $errors[] = 'Nome obbligatorio.';
-        }
-        if (empty($cognome)) {
-            $errors[] = 'Cognome obbligatorio.';
-        }
+        if (empty($nome))    $errors[] = 'Nome obbligatorio.';
+        if (empty($cognome)) $errors[] = 'Cognome obbligatorio.';
         if (empty($errors)) {
-            $db->prepare(
-                'UPDATE users SET nome = ?, cognome = ? WHERE id = ?'
-            )->execute([$nome, $cognome, $_SESSION['user_id']]);
-            $_SESSION['nome'] = $nome;
+            $db->prepare('UPDATE users SET nome=?,cognome=? WHERE id=?')->execute([$nome,$cognome,$_SESSION['user_id']]);
+            $_SESSION['nome']    = $nome;
             $_SESSION['cognome'] = $cognome;
-            $user = getUserById($_SESSION['user_id']);
+            $user    = getUserById($_SESSION['user_id']);
             $success = 'Profilo aggiornato.';
         }
     } elseif ($action === 'change_password') {
-        $old = $_POST['old_password'] ?? '';
-        $new = $_POST['new_password'] ?? '';
+        $old     = $_POST['old_password']     ?? '';
+        $new     = $_POST['new_password']     ?? '';
         $confirm = $_POST['confirm_password'] ?? '';
-
-        if (!password_verify($old, $user['password'])) {
-            $errors[] = 'Password attuale non corretta.';
-        }
-        if (strlen($new) < 6) {
-            $errors[] = 'Nuova password minimo 6 caratteri.';
-        }
-        if ($new !== $confirm) {
-            $errors[] = 'Le nuove password non coincidono.';
-        }
+        if (!password_verify($old, $user['password'])) $errors[] = 'Password attuale non corretta.';
+        if (strlen($new) < 6)    $errors[] = 'Nuova password minimo 6 caratteri.';
+        if ($new !== $confirm)   $errors[] = 'Le nuove password non coincidono.';
         if (empty($errors)) {
-            $hash = password_hash($new, PASSWORD_DEFAULT);
-            $db->prepare('UPDATE users SET password = ? WHERE id = ?')
-               ->execute([$hash, $_SESSION['user_id']]);
+            $db->prepare('UPDATE users SET password=? WHERE id=?')->execute([password_hash($new,PASSWORD_DEFAULT),$_SESSION['user_id']]);
             $success = 'Password aggiornata.';
         }
-    } else {
-        $errors[] = 'Azione non valida.';
     }
 }
 
+$initials = strtoupper(mb_substr($user['nome'],0,1).mb_substr($user['cognome'],0,1));
+$isHost   = isHost();
 $pageTitle = 'Profilo';
 require_once __DIR__ . '/../includes/header.php';
 ?>
 <main class="container">
-    <div class="page-header">
-        <h1>Profilo</h1>
-        <span class="badge badge-<?= isHost() ? 'host' : 'student' ?>"><?= isHost() ? 'Host' : 'Studente' ?></span>
+
+    <div class="breadcrumb">
+        <a href="/CodeRush/">Home</a>
+        <span class="breadcrumb-sep">›</span>
+        <span>Profilo</span>
+    </div>
+
+    <div class="page-header" style="animation:fade-up .4s ease-out;">
+        <div>
+            <h1>Il tuo profilo</h1>
+            <p class="page-subtitle">Identità e credenziali</p>
+        </div>
     </div>
 
     <?php if (!empty($errors)): ?>
-        <div class="alert alert-danger"><?= implode('<br>', array_map('sanitize', $errors)) ?></div>
+    <div class="alert alert-danger"><?= implode('<br>', array_map('sanitize',$errors)) ?></div>
     <?php endif; ?>
     <?php if ($success): ?>
-        <div class="alert alert-success"><?= sanitize($success) ?></div>
+    <div class="alert alert-success"><?= sanitize($success) ?></div>
     <?php endif; ?>
 
-    <?php if (isHost()): ?>
-    <div class="card">
-        <div class="card-title">Informazioni personali</div>
-        <form method="POST" novalidate>
-            <input type="hidden" name="action" value="update_info">
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Nome</label>
-                    <input type="text" name="nome" class="form-control" value="<?= sanitize($user['nome']) ?>" required minlength="2">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Cognome</label>
-                    <input type="text" name="cognome" class="form-control" value="<?= sanitize($user['cognome']) ?>" required minlength="2">
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Username</label>
-                <input type="text" class="form-control" value="<?= sanitize($user['login_id']) ?>" disabled>
-                <div class="form-text">Lo username non può essere modificato.</div>
-            </div>
-            <button type="submit" class="btn btn-primary">Salva modifiche</button>
-        </form>
-    </div>
-    <?php else: ?>
-    <div class="card">
-        <div class="card-title">Informazioni personali</div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-            <div>
-                <div class="form-label">Nome</div>
-                <div><?= sanitize($user['nome']) ?></div>
-            </div>
-            <div>
-                <div class="form-label">Cognome</div>
-                <div><?= sanitize($user['cognome']) ?></div>
-            </div>
-            <div>
-                <div class="form-label">Matricola</div>
-                <div><?= sanitize($user['login_id']) ?></div>
+    <div class="profile-section" style="animation:fade-up .5s ease-out .1s both;">
+
+        <!-- Left: avatar card -->
+        <div class="card" style="text-align:center;">
+            <div class="profile-avatar"><?= $initials ?></div>
+            <h2 style="font-size:20px;font-weight:900;"><?= sanitize($user['nome'].' '.$user['cognome']) ?></h2>
+            <p style="font-size:13px;color:var(--muted-foreground);margin-top:2px;">@<?= sanitize(strtolower($user['login_id'])) ?></p>
+            <div style="margin-top:12px;">
+                <span class="pill" style="background:<?= $isHost ? 'rgba(61,181,64,.18)' : 'rgba(74,143,212,.18)' ?>;color:<?= $isHost ? 'var(--brand-green)' : 'var(--brand-blue)' ?>;">
+                    <?= $isHost ? 'Host' : 'Studente' ?>
+                </span>
             </div>
         </div>
-    </div>
-    <?php endif; ?>
 
-    <div class="card">
-        <div class="card-title">Cambia password</div>
-        <form method="POST" novalidate id="formPassword">
-            <input type="hidden" name="action" value="change_password">
-            <div class="form-group">
-                <label class="form-label">Password attuale</label>
-                <input type="password" name="old_password" class="form-control" required>
-                <div class="error-text" id="err-old"></div>
+        <!-- Right: forms -->
+        <div style="display:flex;flex-direction:column;gap:20px;">
+
+            <!-- Dati personali -->
+            <div class="card">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;">
+                    <h3 style="font-size:17px;font-weight:900;">Dati personali</h3>
+                    <?php if (!$isHost): ?>
+                    <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;color:#fff;background:linear-gradient(135deg,var(--brand-orange),var(--brand-danger));">
+                        🔒 Non modificabile
+                    </span>
+                    <?php endif; ?>
+                </div>
+
+                <?php if ($isHost): ?>
+                <form method="POST" novalidate>
+                    <input type="hidden" name="action" value="update_info">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Nome</label>
+                            <input type="text" name="nome" class="input-arena" value="<?= sanitize($user['nome']) ?>" required minlength="2">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Cognome</label>
+                            <input type="text" name="cognome" class="input-arena" value="<?= sanitize($user['cognome']) ?>" required minlength="2">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="input-arena" value="<?= sanitize($user['login_id']) ?>" disabled style="opacity:.6;">
+                        <div class="form-text">Lo username non può essere modificato.</div>
+                    </div>
+                    <button type="submit" class="btn-primary-lg">Salva modifiche</button>
+                </form>
+                <?php else: ?>
+                <div style="border:2px dashed rgba(247,148,29,.5);border-radius:14px;padding:16px;background:rgba(247,148,29,.06);">
+                    <div class="form-row">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label">Nome</label>
+                            <input type="text" class="input-arena" value="<?= sanitize($user['nome']) ?>" disabled style="opacity:.7;cursor:not-allowed;">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label">Cognome</label>
+                            <input type="text" class="input-arena" value="<?= sanitize($user['cognome']) ?>" disabled style="opacity:.7;cursor:not-allowed;">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:16px;margin-bottom:0;">
+                        <label class="form-label">Matricola</label>
+                        <input type="text" class="input-arena" value="<?= sanitize($user['login_id']) ?>" disabled style="opacity:.7;cursor:not-allowed;">
+                    </div>
+                    <p style="margin-top:12px;font-size:12px;font-weight:600;color:var(--brand-orange);">
+                        ⚠️ I dati personali possono essere modificati solo dal tuo professore.
+                    </p>
+                </div>
+                <?php endif; ?>
             </div>
-            <div class="form-group">
-                <label class="form-label">Nuova password</label>
-                <input type="password" name="new_password" class="form-control" required minlength="6">
-                <div class="form-text">Minimo 6 caratteri.</div>
-                <div class="error-text" id="err-new"></div>
+
+            <!-- Cambia password -->
+            <div class="card">
+                <h3 style="font-size:17px;font-weight:900;margin-bottom:16px;">Cambia password</h3>
+                <form method="POST" novalidate id="formPassword">
+                    <input type="hidden" name="action" value="change_password">
+                    <div class="form-group">
+                        <label class="form-label">Password attuale</label>
+                        <input type="password" name="old_password" class="input-arena" required>
+                        <div class="error-text" id="err-old_password"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nuova password</label>
+                        <input type="password" name="new_password" id="new_password" class="input-arena" required minlength="6">
+                        <!-- Password strength bar -->
+                        <div class="pwd-strength" id="pwd-strength" style="margin-top:10px;display:none;">
+                            <div class="pwd-seg"></div>
+                            <div class="pwd-seg"></div>
+                            <div class="pwd-seg"></div>
+                            <div class="pwd-seg"></div>
+                        </div>
+                        <div class="pwd-label"></div>
+                        <div class="error-text" id="err-new_password"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Conferma nuova password</label>
+                        <input type="password" name="confirm_password" class="input-arena" required>
+                        <div class="error-text" id="err-confirm_password"></div>
+                    </div>
+                    <button type="submit" class="btn-primary-lg">Aggiorna password</button>
+                </form>
             </div>
-            <div class="form-group">
-                <label class="form-label">Conferma nuova password</label>
-                <input type="password" name="confirm_password" class="form-control" required>
-                <div class="error-text" id="err-confirm"></div>
-            </div>
-            <button type="submit" class="btn btn-primary">Aggiorna password</button>
-        </form>
-    </div>
+
+        </div><!-- end right -->
+    </div><!-- end profile-section -->
 </main>
+<script src="/CodeRush/js/script.js"></script>
+<script>
+// show strength bar when user starts typing
+document.getElementById('new_password').addEventListener('input', function () {
+    var bar = document.getElementById('pwd-strength');
+    bar.style.display = this.value ? 'flex' : 'none';
+});
+</script>
 </body>
 </html>
-<script src="/CodeRush/js/script.js"></script>
