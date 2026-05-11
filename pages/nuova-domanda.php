@@ -54,10 +54,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $linguaggi = getAllLinguaggi();
 $pageTitle = $isEdit ? 'Modifica consegna' : 'Nuova consegna';
 require_once __DIR__ . '/../includes/header.php';
+<link rel="stylesheet" href="/CodeRush/css/pages/nuova-domanda.css">
 ?>
 <main class="container">
 
-    <div class="breadcrumb" style="animation:fade-up .35s ease-out both;">
+    <div class="breadcrumb page-section-breadcrumb">
         <a href="/CodeRush/">Home</a>
         <span class="breadcrumb-sep">›</span>
         <a href="/CodeRush/pages/consegne.php">Consegne</a>
@@ -65,7 +66,7 @@ require_once __DIR__ . '/../includes/header.php';
         <span><?= $isEdit ? sanitize($domanda['nome']) : 'Nuova' ?></span>
     </div>
 
-    <div class="page-header" style="animation:fade-up .4s ease-out both;">
+    <div class="page-header page-section-header">
         <div>
             <h1><?= $isEdit ? 'Modifica consegna' : 'Nuova consegna' ?></h1>
             <p class="page-subtitle"><?= $isEdit ? 'Modifica il testo e le impostazioni' : 'Crea un nuovo problema da assegnare' ?></p>
@@ -74,13 +75,13 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <?php if (!empty($errors)): ?>
-    <div class="alert alert-danger" style="animation:fade-up .3s ease-out both;"><?= implode('<br>', array_map('sanitize', $errors)) ?></div>
+    <div class="alert alert-danger page-section-alert"><?= implode('<br>', array_map('sanitize', $errors)) ?></div>
     <?php endif; ?>
     <?php if ($success): ?>
-    <div class="alert alert-success" style="animation:fade-up .3s ease-out both;"><?= sanitize($success) ?></div>
+    <div class="alert alert-success page-section-alert"><?= sanitize($success) ?></div>
     <?php endif; ?>
 
-    <div style="max-width:760px;animation:fade-up .45s ease-out .05s both;">
+    <div class="form-wrap">
         <div class="card">
             <form method="POST" novalidate id="formDomanda">
 
@@ -95,8 +96,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                 <div class="form-group">
                     <label class="form-label">Testo della consegna</label>
-                    <textarea name="testo" class="code-editor"
-                              style="min-height:220px;border-radius:14px;border:2px solid var(--border);font-family:'Poppins',inherit;font-size:14px;line-height:1.7;"
+                    <textarea name="testo" class="code-editor textarea-consegna"
                               required
                               placeholder="Scrivi qui la descrizione dettagliata del problema..."><?= sanitize($testo) ?></textarea>
                     <div class="error-text" id="err-testo"></div>
@@ -117,7 +117,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <div class="error-text" id="err-linguaggio_id"></div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Difficoltà <span style="color:var(--muted-foreground);font-weight:400;">(facoltativa)</span></label>
+                        <label class="form-label">Difficoltà <span class="label-optional">(facoltativa)</span></label>
                         <select name="difficolta" class="input-arena">
                             <option value="null" <?= $difficolta === null ? 'selected' : '' ?>>— Non specificata —</option>
                             <option value="0"    <?= $difficolta === 0    ? 'selected' : '' ?>>Facile</option>
@@ -126,7 +126,7 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
                 </div>
 
-                <div style="display:flex;gap:10px;margin-top:8px;">
+                <div class="btn-row">
                     <button type="submit" class="btn-primary-lg"><?= $isEdit ? 'Salva modifiche' : 'Crea consegna' ?></button>
                     <a href="/CodeRush/pages/consegne.php" class="btn-ghost">Annulla</a>
                 </div>

@@ -1,0 +1,100 @@
+@import url('/CodeRush/css/pages/common-pages.css');
+
+.lang-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 24px;
+    align-items: start;
+}
+
+.card-accent-blue {
+    border-color: rgba(74, 143, 212, 0.4);
+}
+
+.section-label-blue {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--brand-blue);
+    margin-bottom: 14px;
+}
+
+.col-100 {
+    width: 100px;
+}
+
+.badge-lang {
+    font-size: 12px;
+    padding: 4px 12px;
+}
+
+.sidebar-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.linguaggi-page {
+    animation: fade-up 0.45s ease-out 0.05s both;
+}
+
+.linguaggi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.linguaggio-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: border-color 0.2s;
+}
+
+.linguaggio-card:hover {
+    border-color: rgba(61, 181, 64, 0.3);
+}
+
+.linguaggio-icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.linguaggio-nome {
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.linguaggio-count {
+    font-size: 12px;
+    color: var(--muted-foreground);
+}
+
+.add-language-section {
+    animation: fade-up 0.45s ease-out 0.1s both;
+}
+
+.add-language-form {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+.add-language-input {
+    flex: 1;
+    min-width: 200px;
+}
+
+.empty-languages {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+@media (max-width: 700px) {
+    .lang-layout {
+        grid-template-columns: 1fr !important;
+    }
+}

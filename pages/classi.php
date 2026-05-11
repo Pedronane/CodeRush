@@ -53,16 +53,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $classi    = getAllClassi();
 $pageTitle = 'Classi';
 require_once __DIR__ . '/../includes/header.php';
+<link rel="stylesheet" href="/CodeRush/css/pages/classi.css">
 ?>
 <main class="container">
 
-    <div class="breadcrumb" style="animation:fade-up .35s ease-out both;">
+    <div class="breadcrumb page-section-breadcrumb">
         <a href="/CodeRush/">Home</a>
         <span class="breadcrumb-sep">›</span>
         <span>Classi</span>
     </div>
 
-    <div class="page-header" style="animation:fade-up .4s ease-out both;">
+    <div class="page-header page-section-header">
         <div>
             <h1>Classi</h1>
             <p class="page-subtitle"><?= count($classi) ?> classe<?= count($classi) !== 1 ? 'i' : '' ?> registrata<?= count($classi) !== 1 ? 'e' : '' ?></p>
@@ -70,18 +71,18 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <?php if (!empty($errors)): ?>
-    <div class="alert alert-danger" style="animation:fade-up .3s ease-out both;"><?= implode('<br>', array_map('sanitize', $errors)) ?></div>
+    <div class="alert alert-danger page-section-alert"><?= implode('<br>', array_map('sanitize', $errors)) ?></div>
     <?php endif; ?>
     <?php if ($success): ?>
-    <div class="alert alert-success" style="animation:fade-up .3s ease-out both;"><?= sanitize($success) ?></div>
+    <div class="alert alert-success page-section-alert"><?= sanitize($success) ?></div>
     <?php endif; ?>
 
-    <div style="display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start;" class="classi-layout">
+    <div class="classi-layout">
 
         <!-- Table -->
-        <div class="card card-no-pad" style="animation:fade-up .45s ease-out .05s both;">
-            <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
-                <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted-foreground);">Classi registrate</span>
+        <div class="card card-no-pad page-section-content">
+            <div class="card-header">
+                <span class="card-header-label">Classi registrate</span>
                 <span class="badge badge-host"><?= count($classi) ?></span>
             </div>
             <?php if (empty($classi)): ?>
@@ -95,7 +96,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <th>Classe</th>
                         <th>Indirizzo</th>
                         <th>Studenti</th>
-                        <th style="width:140px;"></th>
+                        <th class="col-actions"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -106,17 +107,17 @@ require_once __DIR__ . '/../includes/header.php';
                 ?>
                 <tr>
                     <td>
-                        <span style="font-weight:800;font-family:'JetBrains Mono',monospace;"><?= $cl['anno'].$cl['sezione'] ?></span>
+                        <span class="classi-code-label"><?= $cl['anno'].$cl['sezione'] ?></span>
                     </td>
                     <td>
-                        <span style="font-size:12px;padding:3px 10px;border-radius:20px;background:rgba(74,143,212,.1);color:var(--brand-blue);font-weight:700;"><?= sanitize($cl['indirizzo']) ?></span>
+                        <span class="badge-indirizzo"><?= sanitize($cl['indirizzo']) ?></span>
                     </td>
                     <td>
-                        <span style="font-weight:700;color:var(--brand-green);"><?= $nStudenti ?></span>
-                        <span style="color:var(--muted-foreground);font-size:12px;"> studenti</span>
+                        <span class="count-green"><?= $nStudenti ?></span>
+                        <span class="text-muted"> studenti</span>
                     </td>
                     <td>
-                        <div style="display:flex;gap:6px;">
+                        <div class="button-group">
                             <a href="/CodeRush/pages/classe.php?id=<?= $cl['id'] ?>" class="btn btn-sm btn-primary">Apri</a>
                             <a href="?edit=<?= $cl['id'] ?>" class="btn btn-sm btn-outline">Modifica</a>
                         </div>
@@ -129,11 +130,11 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
 
         <!-- Forms -->
-        <div style="display:flex;flex-direction:column;gap:20px;animation:fade-up .45s ease-out .1s both;">
+        <div class="sidebar-stack page-section-secondary">
 
             <?php if ($editClasse): ?>
-            <div class="card" style="border-color:rgba(74,143,212,.4);">
-                <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--brand-blue);margin-bottom:16px;">Modifica classe</p>
+            <div class="card card-accent-blue">
+                <p class="section-label-blue">Modifica classe</p>
                 <form method="POST" novalidate>
                     <input type="hidden" name="action" value="edit">
                     <div class="form-group">
@@ -162,8 +163,8 @@ require_once __DIR__ . '/../includes/header.php';
                             </select>
                         </div>
                     </div>
-                    <div style="display:flex;gap:8px;margin-top:4px;">
-                        <button type="submit" class="btn-primary-lg" style="flex:1;justify-content:center;">Salva</button>
+                    <div class="form-button-row mt-4">
+                        <button type="submit" class="btn-primary-lg btn-flex">Salva</button>
                         <a href="/CodeRush/pages/classi.php" class="btn-ghost">Annulla</a>
                     </div>
                 </form>
@@ -171,7 +172,7 @@ require_once __DIR__ . '/../includes/header.php';
             <?php endif; ?>
 
             <div class="card">
-                <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted-foreground);margin-bottom:16px;">Crea nuova classe</p>
+                <p class="card-header-label">Crea nuova classe</p>
                 <form method="POST" novalidate>
                     <input type="hidden" name="action" value="create">
                     <div class="form-group">
@@ -200,15 +201,12 @@ require_once __DIR__ . '/../includes/header.php';
                             </select>
                         </div>
                     </div>
-                    <button type="submit" class="btn-primary-lg btn-block" style="margin-top:4px;">Crea classe</button>
+                    <button type="submit" class="btn-primary-lg btn-block mt-4">Crea classe</button>
                 </form>
             </div>
         </div>
     </div>
 </main>
-<style>
-@media (max-width:800px) { .classi-layout { grid-template-columns:1fr !important; } }
-</style>
 <script src="/CodeRush/js/script.js"></script>
 </body>
 </html>

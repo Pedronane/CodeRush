@@ -1,0 +1,184 @@
+.page-section {
+    animation: fade-up 0.35s ease-out both;
+}
+
+.page-section-header {
+    animation: fade-up 0.4s ease-out both;
+}
+
+.page-section-alert {
+    animation: fade-up 0.3s ease-out both;
+}
+
+.page-section-students {
+    animation: fade-up 0.45s ease-out 0.05s both;
+}
+
+.page-section-add {
+    animation: fade-up 0.45s ease-out 0.1s both;
+}
+
+.page-section-rushes {
+    animation: fade-up 0.45s ease-out 0.15s both;
+}
+
+.card-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-header-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted-foreground);
+}
+
+.table-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.table-header-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted-foreground);
+}
+
+.table-header-badge {
+    margin-left: auto;
+}
+
+.student-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.student-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--brand-green), var(--brand-blue));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.student-name-link {
+    font-weight: 700;
+}
+
+.student-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted-foreground);
+}
+
+.student-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.form-move-student {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.form-move-select {
+    padding: 5px 10px;
+    font-size: 12px;
+    width: auto;
+}
+
+.form-remove-student {
+    display: inline;
+}
+
+.add-student-form {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.add-student-select {
+    flex: 1;
+    max-width: 380px;
+}
+
+.add-student-note {
+    font-size: 12px;
+    color: var(--muted-foreground);
+    margin-top: 10px;
+}
+
+.add-student-note a {
+    color: inherit;
+}
+
+.no-students-card {
+    animation: fade-up 0.45s ease-out 0.1s both;
+    border-style: dashed;
+}
+
+.no-students-text {
+    color: var(--muted-foreground);
+    font-size: 13px;
+}
+
+.no-students-text-margin {
+    margin-top: 8px;
+}
+
+.rush-table-date {
+    color: var(--muted-foreground);
+    font-size: 12px;
+}
+
+.rush-table-nome {
+    font-weight: 600;
+}
+
+.rush-table-host {
+    color: var(--muted-foreground);
+}
+
+.rush-table-actions {
+    display: flex;
+    gap: 6px;
+}
+
+table th {
+    width: auto;
+}
+
+table th[style*="width:280px"] {
+    width: 280px;
+}
+
+table th[style*="width:100px"] {
+    width: 100px;
+}
+
+.col-280 {
+    width: 280px;
+}
+
+.card-header-label-mb {
+    margin-bottom: 14px;
+}
+
+.col-100 { width: 100px; }

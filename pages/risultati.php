@@ -15,10 +15,11 @@ if (isStudent()) {
 
 $pageTitle = 'Risultati — '.$partita['domanda_nome'];
 require_once __DIR__ . '/../includes/header.php';
+<link rel="stylesheet" href="/CodeRush/css/pages/risultati.css">
 ?>
 <main class="container">
 
-    <div class="breadcrumb" style="animation:fade-up .35s ease-out both;">
+    <div class="breadcrumb page-section-breadcrumb">
         <a href="/CodeRush/">Home</a>
         <span class="breadcrumb-sep">›</span>
         <?php if (isHost()): ?>
@@ -28,16 +29,16 @@ require_once __DIR__ . '/../includes/header.php';
         <span>Risultati</span>
     </div>
 
-    <div class="page-header" style="animation:fade-up .4s ease-out both;">
+    <div class="page-header page-section-header">
         <div>
             <h1><?= sanitize($partita['domanda_nome']) ?></h1>
             <p class="page-subtitle">
-                <span class="badge badge-host" style="margin-right:6px;"><?= sanitize($partita['linguaggio_nome']) ?></span>
+                <span class="badge badge-host badge-lang"><?= sanitize($partita['linguaggio_nome']) ?></span>
                 <?= sanitize($partita['anno'].$partita['sezione'].' '.$partita['indirizzo']) ?>
                 &nbsp;·&nbsp; <?= date('d/m/Y H:i', strtotime($partita['created_at'])) ?>
             </p>
         </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div class="action-row">
             <?php if (isHost()): ?>
             <a href="/CodeRush/pages/rush-detail.php?id=<?= $partita_id ?>" class="btn-primary-lg">Analisi completa →</a>
             <?php endif; ?>
@@ -70,16 +71,15 @@ require_once __DIR__ . '/../includes/header.php';
     ?>
     <div class="chain-card" style="animation:fade-up .5s ease-out <?= $delay ?>s both;">
         <div class="chain-header">
-            <div style="display:flex;align-items:center;gap:12px;">
-                <div class="turn-number" style="width:34px;height:34px;font-size:13px;flex-shrink:0;"><?= $i + 1 ?></div>
+            <div class="chain-header">
+                <div class="turn-number-sm"><?= $i + 1 ?></div>
                 <div>
-                    <div style="font-size:14px;font-weight:800;"><?= sanitize($part['cognome'].' '.$part['nome']) ?></div>
-                    <div style="font-size:10px;color:var(--muted-foreground);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-top:2px;">Catena iniziale</div>
+                    <div class="participant-name"><?= sanitize($part['cognome'].' '.$part['nome']) ?></div>
+                    <div class="chain-label">Catena iniziale</div>
                 </div>
             </div>
             <?php if ($val): ?>
-            <span style="padding:5px 16px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.07em;
-                         background:<?= $votoBg ?>;color:<?= $votoColor ?>;">
+            <span class="chain-status-badge" style="background:<?= $votoBg ?>;color:<?= $votoColor ?>;">
                 <?= ucfirst($voto) ?>
             </span>
             <?php else: ?>
@@ -88,11 +88,11 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
 
         <?php if ($val && $val['feedback']): ?>
-        <div style="padding:16px 22px;background:rgba(74,143,212,.06);border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:flex-start;">
-            <span style="font-size:20px;flex-shrink:0;">🤖</span>
+        <div class="ai-feedback-box">
+            <span class="ai-icon">🤖</span>
             <div>
-                <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--brand-blue);margin-bottom:5px;">Feedback AI</div>
-                <p style="font-size:13px;line-height:1.7;"><?= sanitize($val['feedback']) ?></p>
+                <div class="ai-label">Feedback AI</div>
+                <p class="ai-text"><?= sanitize($val['feedback']) ?></p>
             </div>
         </div>
         <?php endif; ?>
@@ -102,7 +102,7 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="chain-turn-meta">
                 <div class="turn-number">▶</div>
                 <span>Codice finale — scritto da
-                    <strong style="color:var(--foreground);"><?= sanitize($lastTurno['nome'].' '.$lastTurno['cognome']) ?></strong>
+                    <strong class="text-fg"><?= sanitize($lastTurno['nome'].' '.$lastTurno['cognome']) ?></strong>
                 </span>
             </div>
             <pre class="code-block"><?= sanitize($lastTurno['codice']) ?></pre>
@@ -111,7 +111,7 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
     <?php endforeach; ?>
 
-    <div style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap;animation:fade-up .5s ease-out .35s both;">
+    <div class="results-actions">
         <a href="/CodeRush/" class="btn-ghost">← Home</a>
         <?php if (isHost()): ?>
         <a href="/CodeRush/pages/rush-detail.php?id=<?= $partita_id ?>" class="btn-primary-lg">Analisi completa →</a>

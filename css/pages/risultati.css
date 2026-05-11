@@ -1,0 +1,187 @@
+@import url('/CodeRush/css/pages/common-pages.css');
+
+.action-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.chain-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.turn-number-sm {
+    width: 34px;
+    height: 34px;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.participant-name {
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.chain-label {
+    font-size: 10px;
+    color: var(--muted-foreground);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 2px;
+}
+
+.chain-status-badge {
+    padding: 5px 16px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+}
+
+.ai-feedback-box {
+    padding: 16px 22px;
+    background: rgba(74, 143, 212, 0.06);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.ai-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.ai-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--brand-blue);
+    margin-bottom: 5px;
+}
+
+.ai-text {
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.text-fg {
+    color: var(--foreground);
+}
+
+.results-actions {
+    margin-top: 12px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    animation: fade-up 0.5s ease-out 0.35s both;
+}
+
+.risultati-container {
+    animation: fade-up 0.45s ease-out 0.05s both;
+}
+
+.risultati-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.risultato-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    transition: border-color 0.2s;
+}
+
+.risultato-voto {
+    font-size: 32px;
+    font-weight: 900;
+    margin: 12px 0;
+}
+
+.risultato-voto-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted-foreground);
+}
+
+.risultato-studente-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.risultato-studente-row:last-child {
+    border-bottom: none;
+}
+
+.risultato-studente-name {
+    font-weight: 600;
+}
+
+.risultato-studente-time {
+    font-size: 12px;
+    color: var(--muted-foreground);
+}
+
+.ranking-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ranking-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border);
+}
+
+.ranking-position {
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--brand-green);
+    min-width: 30px;
+    text-align: center;
+}
+
+.ranking-name {
+    flex: 1;
+    font-weight: 600;
+}
+
+.ranking-badge {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.ranking-badge-first {
+    background: rgba(61, 181, 64, 0.18);
+    color: var(--brand-green);
+}
+
+.ranking-badge-second {
+    background: rgba(74, 143, 212, 0.18);
+    color: var(--brand-blue);
+}
+
+.ranking-badge-third {
+    background: rgba(247, 148, 29, 0.18);
+    color: var(--brand-orange);
+}
+
+.badge-lang { margin-right: 6px; }

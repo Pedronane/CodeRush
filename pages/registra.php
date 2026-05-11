@@ -38,16 +38,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $pageTitle = 'Registra utente';
 require_once __DIR__ . '/../includes/header.php';
+<link rel="stylesheet" href="/CodeRush/css/pages/registra.css">
 ?>
 <main class="container">
 
-    <div class="breadcrumb" style="animation:fade-up .35s ease-out both;">
+    <div class="breadcrumb page-section-breadcrumb">
         <a href="/CodeRush/">Home</a>
         <span class="breadcrumb-sep">›</span>
         <span>Registra utente</span>
     </div>
 
-    <div class="page-header" style="animation:fade-up .4s ease-out both;">
+    <div class="page-header page-section-header">
         <div>
             <h1>Registra utente</h1>
             <p class="page-subtitle">Crea account studente o host</p>
@@ -55,13 +56,13 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <?php if (!empty($errors)): ?>
-    <div class="alert alert-danger" style="animation:fade-up .3s ease-out both;"><?= implode('<br>', array_map('sanitize', $errors)) ?></div>
+    <div class="alert alert-danger page-section-alert"><?= implode('<br>', array_map('sanitize', $errors)) ?></div>
     <?php endif; ?>
     <?php if ($success): ?>
-    <div class="alert alert-success" style="animation:fade-up .3s ease-out both;"><?= $success ?></div>
+    <div class="alert alert-success page-section-alert"><?= $success ?></div>
     <?php endif; ?>
 
-    <div style="max-width:640px;animation:fade-up .45s ease-out .05s both;">
+    <div class="registra-form-wrap">
         <div class="card">
             <div class="tabs">
                 <button class="tab-btn <?= $activeTab === 'studente' ? 'active' : '' ?>" data-tab="studente">👤 Nuovo studente</button>
@@ -99,7 +100,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <div class="form-group">
                         <label class="form-label">Password</label>
                         <input type="password" name="password" id="new_password" class="input-arena" required minlength="6">
-                        <div class="pwd-strength" id="pwd-strength" style="display:none;">
+                        <div class="pwd-strength" id="pwd-strength">
                             <div class="pwd-seg"></div>
                             <div class="pwd-seg"></div>
                             <div class="pwd-seg"></div>
@@ -108,13 +109,13 @@ require_once __DIR__ . '/../includes/header.php';
                         <div class="pwd-label"></div>
                         <div class="form-text">Minimo 6 caratteri.</div>
                     </div>
-                    <button type="submit" class="btn-primary-lg btn-block" style="padding:14px;">Crea studente</button>
+                    <button type="submit" class="btn-primary-lg btn-block btn-padded">Crea studente</button>
                 </form>
             </div>
 
             <!-- Host -->
             <div class="tab-pane <?= $activeTab === 'host' ? 'active' : '' ?>" id="tab-host">
-                <div class="alert alert-warning" style="margin-bottom:20px;">Solo gli host esistenti possono creare altri account host.</div>
+                <div class="alert alert-warning page-section-alert">Solo gli host esistenti possono creare altri account host.</div>
                 <form method="POST" novalidate id="formHost">
                     <input type="hidden" name="tipo" value="host">
                     <div class="form-row">
@@ -143,7 +144,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <input type="password" name="password" class="input-arena" required minlength="6">
                         <div class="form-text">Minimo 6 caratteri.</div>
                     </div>
-                    <button type="submit" class="btn-primary-lg btn-block" style="padding:14px;">Crea host</button>
+                    <button type="submit" class="btn-primary-lg btn-block btn-padded">Crea host</button>
                 </form>
             </div>
         </div>

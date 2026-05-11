@@ -5,41 +5,38 @@ if (!isStudent()) { header('Location: /CodeRush/login.php'); exit(); }
 
 $pageTitle = 'Partecipa al Rush';
 require_once __DIR__ . '/../includes/header.php';
+<link rel="stylesheet" href="/CodeRush/css/pages/partecipa.css">
 ?>
-<main class="partecipa-main" style="position:relative;">
-    <div data-particles="20" style="position:absolute;inset:0;pointer-events:none;z-index:0;"></div>
+<main class="partecipa-main">
+    <div data-particles="20" class="particles-bg-abs"></div>
 
-    <div style="position:relative;z-index:1;animation:fade-up .5s ease-out both;">
+    <div class="partecipa-inner">
         <span class="partecipa-badge">Pronto a giocare</span>
         <h1 class="partecipa-title">
             Entra nel <span class="brand-gradient-text">Rush</span>
         </h1>
-        <p style="color:var(--muted-foreground);margin-top:12px;margin-bottom:32px;">
+        <p class="partecipa-subtitle">
             Inserisci il codice partita che ti ha dato il professore
         </p>
 
-        <form method="GET" action="/CodeRush/pages/waiting.php" novalidate
-              style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.4);">
+        <form method="GET" action="/CodeRush/pages/waiting.php" novalidate class="join-card">
             <input
                 type="text"
                 name="code"
-                class="code-input"
+                class="code-input mb-16"
                 placeholder="ABC123"
                 maxlength="6"
                 required
                 autocomplete="off"
                 autocapitalize="characters"
                 oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"
-                style="margin-bottom:16px;"
             >
-            <button type="submit"
-                class="btn-primary-lg btn-block"
-                style="padding:16px;font-size:16px;border-radius:14px;">
+            <button type="submit" class="btn-primary-lg btn-block input-lg">
                 Entra ▸
             </button>
         </form>
 
-        <a href="/CodeRush/" style="display:inline-block;margin-top:20px;font-size:12px;font-weight:600;color:var(--muted-foreground);">
+        <a href="/CodeRush/" class="back-link">
             ← Torna alla home
         </a>
     </div>

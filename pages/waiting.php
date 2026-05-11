@@ -51,6 +51,7 @@ $pageTitle = 'In attesa...';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= sanitize($pageTitle) ?> — CodeRush</title>
     <link rel="stylesheet" href="/CodeRush/css/style.css">
+    <link rel="stylesheet" href="/CodeRush/css/pages/waiting.css">
 </head>
 <body>
 
@@ -60,37 +61,37 @@ $pageTitle = 'In attesa...';
     <div class="bfx-blob bfx-blob-blue"></div>
     <div class="bfx-blob bfx-blob-orange"></div>
 </div>
-<div data-particles="26" style="position:fixed;inset:0;z-index:0;pointer-events:none;"></div>
+<div data-particles="26" class="particles-bg"></div>
 
-<div class="waiting-full" style="position:relative;z-index:1;">
-    <div class="waiting-inner">
+<div class="waiting-full">
+    <div class="waiting-inner waiting-content">
 
     <?php if ($error): ?>
-        <div style="animation:fade-up .5s ease-out both;">
-            <div class="alert alert-danger" style="margin-bottom:20px;"><?= sanitize($error) ?></div>
+        <div class="anim-50">
+            <div class="alert alert-danger mb-20"><?= sanitize($error) ?></div>
             <a href="/CodeRush/" class="btn-ghost">← Torna alla home</a>
         </div>
 
     <?php elseif ($partita): ?>
         <!-- Dual-ring spinner -->
-        <div class="dual-spinner" style="margin:0 auto;animation:fade-up .4s ease-out both;">
+        <div class="dual-spinner spinner-centered">
             <div class="ring-outer"></div>
             <div class="ring-inner"></div>
         </div>
 
-        <div style="animation:fade-up .5s ease-out .1s both;">
+        <div class="anim-50 mt-24">
             <h1 class="waiting-title">
                 In attesa del Professor
                 <span class="brand-gradient-text"><?= sanitize($partita['host_cognome']) ?></span>
             </h1>
-            <p style="color:var(--muted-foreground);font-size:14px;">
-                La partita inizierà non appena l'host darà il via<span style="animation:pulse-soft 1s ease-in-out infinite;display:inline-block;">...</span>
+            <p class="text-muted-md">
+                La partita inizierà non appena l'host darà il via<span class="dots-anim">...</span>
             </p>
         </div>
 
         <!-- Info box -->
-        <div class="info-box" style="width:100%;max-width:380px;margin-top:24px;animation:fade-up .5s ease-out .2s both;">
-            <p class="info-label" style="margin-bottom:12px;">Info partita</p>
+        <div class="info-box info-box-anim">
+            <p class="info-label mb-12">Info partita</p>
             <div class="info-row">
                 <span class="info-label">Codice</span>
                 <span class="info-val code-val"><?= sanitize($partita['codice_accesso']) ?></span>
@@ -105,13 +106,13 @@ $pageTitle = 'In attesa...';
             </div>
         </div>
 
-        <a href="/CodeRush/" style="margin-top:20px;font-size:12px;font-weight:600;color:var(--muted-foreground);">
+        <a href="/CodeRush/" class="back-link">
             ← Torna alla home
         </a>
 
     <?php else: ?>
-        <div style="animation:fade-up .5s ease-out both;">
-            <h2 style="font-size:24px;font-weight:900;margin-bottom:16px;">Partita non trovata</h2>
+        <div class="anim-50">
+            <h2 class="error-title">Partita non trovata</h2>
             <a href="/CodeRush/" class="btn-ghost">← Torna alla home</a>
         </div>
     <?php endif; ?>

@@ -1,0 +1,71 @@
+@import url('/CodeRush/css/pages/common-pages.css');
+
+.col-140 {
+    width: 140px;
+}
+
+.td-date {
+    color: var(--muted-foreground);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.td-name {
+    font-weight: 600;
+}
+
+.td-muted {
+    color: var(--muted-foreground);
+}
+
+.rushes-section {
+    animation: fade-up 0.45s ease-out 0.05s both;
+}
+
+.rush-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.rush-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.rush-item:last-child {
+    border-bottom: none;
+}
+
+.rush-info {
+    flex: 1;
+}
+
+.rush-date {
+    font-size: 12px;
+    color: var(--muted-foreground);
+}
+
+.rush-name {
+    font-weight: 600;
+    margin: 4px 0;
+}
+
+.rush-class {
+    font-size: 12px;
+    color: var(--muted-foreground);
+}
+
+.rush-actions {
+    display: flex;
+    gap: 6px;
+    margin-left: 12px;
+}
+
+.empty-rushes {
+    text-align: center;
+    padding: 40px 20px;
+}

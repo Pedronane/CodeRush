@@ -1,0 +1,191 @@
+@import url('/CodeRush/css/pages/common-pages.css');
+
+.particles-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.lobby-content {
+    position: relative;
+    z-index: 1;
+}
+
+.anim-30 {
+    animation: fade-up 0.3s ease-out both;
+}
+
+.anim-40 {
+    animation: fade-up 0.4s ease-out both;
+}
+
+.anim-45 {
+    animation: fade-up 0.45s ease-out both;
+}
+
+.anim-50 {
+    animation: fade-up 0.5s ease-out both;
+}
+
+.lobby-subtitle {
+    color: var(--muted-foreground);
+    font-size: 14px;
+    margin-top: 12px;
+    animation: fade-up 0.45s ease-out both;
+}
+
+.text-muted-md {
+    font-size: 14px;
+    color: var(--muted-foreground);
+}
+
+.empty-grid-msg {
+    color: var(--muted-foreground);
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 40px 0;
+}
+
+.info-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.info-val-green {
+    color: var(--brand-green);
+}
+
+.text-clamp {
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--muted-foreground);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.start-hint {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    margin-top: 4px;
+    opacity: 0.9;
+}
+
+.lobby-header {
+    animation: fade-up 0.4s ease-out both;
+}
+
+.lobby-code-section {
+    animation: fade-up 0.45s ease-out 0.05s both;
+    text-align: center;
+}
+
+.lobby-code-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted-foreground);
+    margin-bottom: 12px;
+}
+
+.lobby-code-display {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 36px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    color: var(--brand-green);
+    margin: 20px 0;
+}
+
+.lobby-code-note {
+    font-size: 12px;
+    color: var(--muted-foreground);
+    margin-top: 12px;
+}
+
+.lobby-participants {
+    animation: fade-up 0.45s ease-out 0.1s both;
+}
+
+.participant-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.participant-avatar-small {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--brand-green), var(--brand-blue));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.participant-name {
+    font-weight: 600;
+    flex: 1;
+    margin-left: 10px;
+}
+
+.participant-status-online {
+    font-size: 10px;
+    color: var(--brand-green);
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.participant-status-pending {
+    font-size: 10px;
+    color: var(--muted-foreground);
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.lobby-actions {
+    animation: fade-up 0.45s ease-out 0.15s both;
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.lobby-button {
+    flex: 1;
+    padding: 16px;
+    font-size: 15px;
+    border-radius: 14px;
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(61, 181, 64, 0.2);
+    border-top-color: var(--brand-green);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.dots-anim {
+    animation: pulse-soft 1s ease-in-out infinite;
+    display: inline-block;
+}

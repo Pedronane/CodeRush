@@ -110,15 +110,17 @@ body {
   line-height: 1.6;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
-  cursor: default;           /* FIX: no text-cursor on non-inputs */
+  cursor: default;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-/* All text non-interactive: show default cursor, no selection */
+/* All text non-interactive: no caret */
 p, h1, h2, h3, h4, h5, h6, span, div, li, td, th, label { cursor: default; }
 /* Interactive: pointer */
 a, button, [role="button"], select { cursor: pointer; }
-/* Inputs: text cursor */
-input, textarea { cursor: text; }
+/* Inputs + editor: re-enable selection */
+input, textarea, .CodeMirror, .CodeMirror * { cursor: text; user-select: text; -webkit-user-select: text; }
 
 a { color: var(--brand-blue); text-decoration: none; transition: color .15s; }
 a:hover { color: var(--brand-green); }

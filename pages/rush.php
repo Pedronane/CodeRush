@@ -40,15 +40,16 @@ $domande = getDomandeByHost($_SESSION['user_id']);
 $pageTitle = 'Nuovo Rush';
 require_once __DIR__ . '/../includes/header.php';
 ?>
+<link rel="stylesheet" href="/CodeRush/css/pages/rush.css">
 <main class="container">
 
-    <div class="breadcrumb" style="animation:fade-up .35s ease-out both;">
+    <div class="breadcrumb page-section-breadcrumb">
         <a href="/CodeRush/">Home</a>
         <span class="breadcrumb-sep">›</span>
         <span>Nuovo Rush</span>
     </div>
 
-    <div class="page-header" style="animation:fade-up .4s ease-out both;">
+    <div class="page-header page-section-header">
         <div>
             <h1>Crea un nuovo Rush</h1>
             <p class="page-subtitle">Configura partita, classe e tempi</p>
@@ -56,7 +57,7 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <?php if (!empty($errors)): ?>
-    <div class="alert alert-danger" style="animation:fade-up .3s ease-out both;"><?= implode('<br>', array_map('sanitize', $errors)) ?></div>
+    <div class="alert alert-danger page-section-alert"><?= implode('<br>', array_map('sanitize', $errors)) ?></div>
     <?php endif; ?>
 
     <?php if (empty($classi)): ?>
@@ -68,10 +69,10 @@ require_once __DIR__ . '/../includes/header.php';
         Nessuna consegna disponibile. <a href="/CodeRush/pages/nuova-domanda.php">Crea una consegna</a> prima di avviare un Rush.
     </div>
     <?php else: ?>
-    <div style="display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start;" class="rush-layout">
+    <div class="rush-layout">
 
         <!-- Form -->
-        <div class="card" style="animation:fade-up .45s ease-out .05s both;">
+        <div class="card form-card">
             <form method="POST" novalidate id="formRush">
 
                 <div class="form-group">
@@ -100,59 +101,58 @@ require_once __DIR__ . '/../includes/header.php';
 
                 <!-- Tempo lettura slider -->
                 <div class="form-group">
-                    <label class="form-label" style="display:flex;justify-content:space-between;">
+                    <label class="form-label form-label-split">
                         <span>Tempo lettura</span>
-                        <span id="lettura-val" style="color:var(--brand-blue);font-family:'JetBrains Mono',monospace;">60s</span>
+                        <span id="lettura-val" class="form-label-value">60s</span>
                     </label>
                     <input type="range" name="tempo_lettura" id="sliderLettura"
                            min="10" max="600" step="10" value="60"
-                           style="width:100%;accent-color:var(--brand-blue);">
-                    <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted-foreground);margin-top:4px;">
+                           class="slider-range">
+                    <div class="slider-labels">
                         <span>10s</span><span>5 minuti</span><span>10 min</span>
                     </div>
                 </div>
 
                 <!-- Tempo turno slider -->
                 <div class="form-group">
-                    <label class="form-label" style="display:flex;justify-content:space-between;">
+                    <label class="form-label form-label-split">
                         <span>Tempo per turno</span>
-                        <span id="turno-val" style="color:var(--brand-green);font-family:'JetBrains Mono',monospace;">120s</span>
+                        <span id="turno-val" class="form-label-value-turno">120s</span>
                     </label>
                     <input type="range" name="tempo_turno" id="sliderTurno"
                            min="30" max="1800" step="30" value="120"
-                           style="width:100%;accent-color:var(--brand-green);">
-                    <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted-foreground);margin-top:4px;">
+                           class="slider-range">
+                    <div class="slider-labels">
                         <span>30s</span><span>15 min</span><span>30 min</span>
                     </div>
                 </div>
 
-                <button type="submit" class="btn-primary-lg btn-block"
-                        style="margin-top:8px;padding:16px;font-size:15px;border-radius:14px;animation:pulse-soft 2.4s ease-in-out infinite;">
+                <button type="submit" class="btn-primary-lg btn-block submit-button">
                     ▶ Avvia il Rush
                 </button>
             </form>
         </div>
 
         <!-- Preview panel -->
-        <div style="display:flex;flex-direction:column;gap:16px;animation:fade-up .45s ease-out .1s both;">
-            <div class="card" id="previewCard" style="display:none;border-color:rgba(61,181,64,.3);">
-                <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted-foreground);margin-bottom:10px;">Anteprima consegna</p>
-                <p id="previewDomanda" style="font-size:13px;line-height:1.7;color:rgba(240,244,250,.85);"></p>
+        <div class="preview-panel">
+            <div class="card preview-card" id="previewCard">
+                <p class="preview-label">Anteprima consegna</p>
+                <p id="previewDomanda" class="preview-text"></p>
             </div>
 
-            <div class="card" style="background:rgba(61,181,64,.06);border-color:rgba(61,181,64,.25);">
-                <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--brand-green);margin-bottom:12px;">Come funziona</p>
-                <div style="display:flex;flex-direction:column;gap:10px;">
+            <div class="card info-card">
+                <p class="info-label">Come funziona</p>
+                <div class="info-steps">
                     <?php foreach ([
                         ['🔵','Lettura','Gli studenti leggono la consegna insieme'],
                         ['✍️','Scrittura','Ogni studente scrive e passa il codice'],
                         ['🏆','Risultati','AI valuta il codice finale della catena'],
                     ] as $step): ?>
-                    <div style="display:flex;gap:10px;align-items:flex-start;">
-                        <span style="font-size:18px;flex-shrink:0;"><?= $step[0] ?></span>
+                    <div class="info-step">
+                        <span class="step-emoji"><?= $step[0] ?></span>
                         <div>
-                            <div style="font-weight:700;font-size:13px;"><?= $step[1] ?></div>
-                            <div style="font-size:12px;color:var(--muted-foreground);"><?= $step[2] ?></div>
+                            <div class="step-title"><?= $step[1] ?></div>
+                            <div class="step-desc"><?= $step[2] ?></div>
                         </div>
                     </div>
                     <?php endforeach; ?>
@@ -162,11 +162,6 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
     <?php endif; ?>
 </main>
-<style>
-@media (max-width:800px) { .rush-layout { grid-template-columns:1fr !important; } }
-input[type=range] { -webkit-appearance:none; height:6px; border-radius:6px; background:var(--border); cursor:pointer; }
-input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:18px; height:18px; border-radius:50%; background:var(--brand-green); cursor:pointer; box-shadow:0 2px 8px rgba(61,181,64,.4); }
-</style>
 <script>
 var domande = <?= json_encode(array_map(function($d){ return ['id'=>$d['id'],'nome'=>$d['nome'],'testo'=>$d['testo']]; }, $domande)) ?>;
 

@@ -41,6 +41,7 @@ $initials = strtoupper(mb_substr($user['nome'],0,1).mb_substr($user['cognome'],0
 $isHost   = isHost();
 $pageTitle = 'Profilo';
 require_once __DIR__ . '/../includes/header.php';
+<link rel="stylesheet" href="/CodeRush/css/pages/profilo.css">
 ?>
 <main class="container">
 
@@ -50,7 +51,7 @@ require_once __DIR__ . '/../includes/header.php';
         <span>Profilo</span>
     </div>
 
-    <div class="page-header" style="animation:fade-up .4s ease-out;">
+    <div class="page-header page-section-header">
         <div>
             <h1>Il tuo profilo</h1>
             <p class="page-subtitle">Identità e credenziali</p>
@@ -64,14 +65,14 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="alert alert-success"><?= sanitize($success) ?></div>
     <?php endif; ?>
 
-    <div class="profile-section" style="animation:fade-up .5s ease-out .1s both;">
+    <div class="profile-section anim-fade-up-slow">
 
         <!-- Left: avatar card -->
-        <div class="card" style="text-align:center;">
+        <div class="card text-center">
             <div class="profile-avatar"><?= $initials ?></div>
-            <h2 style="font-size:20px;font-weight:900;"><?= sanitize($user['nome'].' '.$user['cognome']) ?></h2>
-            <p style="font-size:13px;color:var(--muted-foreground);margin-top:2px;">@<?= sanitize(strtolower($user['login_id'])) ?></p>
-            <div style="margin-top:12px;">
+            <h2 class="profile-name"><?= sanitize($user['nome'].' '.$user['cognome']) ?></h2>
+            <p class="profile-username">@<?= sanitize(strtolower($user['login_id'])) ?></p>
+            <div class="mt-12">
                 <span class="pill" style="background:<?= $isHost ? 'rgba(61,181,64,.18)' : 'rgba(74,143,212,.18)' ?>;color:<?= $isHost ? 'var(--brand-green)' : 'var(--brand-blue)' ?>;">
                     <?= $isHost ? 'Host' : 'Studente' ?>
                 </span>
@@ -79,14 +80,14 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
 
         <!-- Right: forms -->
-        <div style="display:flex;flex-direction:column;gap:20px;">
+        <div class="profile-sections">
 
             <!-- Dati personali -->
             <div class="card">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;">
-                    <h3 style="font-size:17px;font-weight:900;">Dati personali</h3>
+                <div class="section-header-row">
+                    <h3 class="section-title">Dati personali</h3>
                     <?php if (!$isHost): ?>
-                    <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;color:#fff;background:linear-gradient(135deg,var(--brand-orange),var(--brand-danger));">
+                    <span class="badge-warning">
                         🔒 Non modificabile
                     </span>
                     <?php endif; ?>
@@ -107,28 +108,28 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
                     <div class="form-group">
                         <label class="form-label">Username</label>
-                        <input type="text" class="input-arena" value="<?= sanitize($user['login_id']) ?>" disabled style="opacity:.6;">
+                        <input type="text" class="input-arena opacity-60" value="<?= sanitize($user['login_id']) ?>" disabled>
                         <div class="form-text">Lo username non può essere modificato.</div>
                     </div>
                     <button type="submit" class="btn-primary-lg">Salva modifiche</button>
                 </form>
                 <?php else: ?>
-                <div style="border:2px dashed rgba(247,148,29,.5);border-radius:14px;padding:16px;background:rgba(247,148,29,.06);">
+                <div class="warning-box">
                     <div class="form-row">
-                        <div class="form-group" style="margin-bottom:0;">
+                        <div class="form-group mb-0">
                             <label class="form-label">Nome</label>
-                            <input type="text" class="input-arena" value="<?= sanitize($user['nome']) ?>" disabled style="opacity:.7;cursor:not-allowed;">
+                            <input type="text" class="input-arena input-readonly" value="<?= sanitize($user['nome']) ?>" disabled>
                         </div>
-                        <div class="form-group" style="margin-bottom:0;">
+                        <div class="form-group mb-0">
                             <label class="form-label">Cognome</label>
-                            <input type="text" class="input-arena" value="<?= sanitize($user['cognome']) ?>" disabled style="opacity:.7;cursor:not-allowed;">
+                            <input type="text" class="input-arena input-readonly" value="<?= sanitize($user['cognome']) ?>" disabled>
                         </div>
                     </div>
-                    <div class="form-group" style="margin-top:16px;margin-bottom:0;">
+                    <div class="form-group form-group-top">
                         <label class="form-label">Matricola</label>
-                        <input type="text" class="input-arena" value="<?= sanitize($user['login_id']) ?>" disabled style="opacity:.7;cursor:not-allowed;">
+                        <input type="text" class="input-arena input-readonly" value="<?= sanitize($user['login_id']) ?>" disabled>
                     </div>
-                    <p style="margin-top:12px;font-size:12px;font-weight:600;color:var(--brand-orange);">
+                    <p class="warning-note">
                         ⚠️ I dati personali possono essere modificati solo dal tuo professore.
                     </p>
                 </div>
@@ -137,7 +138,7 @@ require_once __DIR__ . '/../includes/header.php';
 
             <!-- Cambia password -->
             <div class="card">
-                <h3 style="font-size:17px;font-weight:900;margin-bottom:16px;">Cambia password</h3>
+                <h3 class="section-title-mb">Cambia password</h3>
                 <form method="POST" novalidate id="formPassword">
                     <input type="hidden" name="action" value="change_password">
                     <div class="form-group">
@@ -149,7 +150,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <label class="form-label">Nuova password</label>
                         <input type="password" name="new_password" id="new_password" class="input-arena" required minlength="6">
                         <!-- Password strength bar -->
-                        <div class="pwd-strength" id="pwd-strength" style="margin-top:10px;display:none;">
+                        <div class="pwd-strength" id="pwd-strength">
                             <div class="pwd-seg"></div>
                             <div class="pwd-seg"></div>
                             <div class="pwd-seg"></div>

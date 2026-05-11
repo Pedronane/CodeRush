@@ -10,10 +10,11 @@ if (!$classe) { header('Location: /CodeRush/pages/classi.php'); exit(); }
 $rushes    = getRushByClasse($classe_id);
 $pageTitle = 'Rush — '.$classe['anno'].$classe['sezione'].' '.$classe['indirizzo'];
 require_once __DIR__ . '/../includes/header.php';
+<link rel="stylesheet" href="/CodeRush/css/pages/rushes.css">
 ?>
 <main class="container">
 
-    <div class="breadcrumb" style="animation:fade-up .35s ease-out both;">
+    <div class="breadcrumb page-section-breadcrumb">
         <a href="/CodeRush/">Home</a>
         <span class="breadcrumb-sep">›</span>
         <a href="/CodeRush/pages/classi.php">Classi</a>
@@ -23,7 +24,7 @@ require_once __DIR__ . '/../includes/header.php';
         <span>Rush</span>
     </div>
 
-    <div class="page-header" style="animation:fade-up .4s ease-out both;">
+    <div class="page-header page-section-header">
         <div>
             <h1>Rush — <?= sanitize($classe['anno'].$classe['sezione'].' '.$classe['indirizzo']) ?></h1>
             <p class="page-subtitle"><?= count($rushes) ?> rush completat<?= count($rushes) !== 1 ? 'i' : 'o' ?></p>
@@ -32,29 +33,29 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <?php if (empty($rushes)): ?>
-    <div class="empty-state" style="animation:fade-up .45s ease-out .05s both;">
+    <div class="empty-state page-section-content">
         <p>Nessun Rush completato per questa classe.</p>
         <a href="/CodeRush/pages/rush.php" class="btn-primary-lg">Avvia il primo Rush</a>
     </div>
     <?php else: ?>
-    <div class="card card-no-pad" style="animation:fade-up .45s ease-out .05s both;">
+    <div class="card card-no-pad page-section-content">
         <table>
             <thead>
                 <tr>
                     <th>Data</th>
                     <th>Consegna</th>
                     <th>Host</th>
-                    <th style="width:140px;"></th>
+                    <th class="col-140"></th>
                 </tr>
             </thead>
             <tbody>
             <?php foreach ($rushes as $r): ?>
             <tr>
-                <td style="color:var(--muted-foreground);font-size:12px;white-space:nowrap;"><?= date('d/m/Y H:i', strtotime($r['created_at'])) ?></td>
-                <td style="font-weight:600;"><?= sanitize($r['domanda_nome']) ?></td>
-                <td style="color:var(--muted-foreground);"><?= sanitize($r['host_nome'].' '.$r['host_cognome']) ?></td>
+                <td class="td-date"><?= date('d/m/Y H:i', strtotime($r['created_at'])) ?></td>
+                <td class="td-name"><?= sanitize($r['domanda_nome']) ?></td>
+                <td class="td-muted"><?= sanitize($r['host_nome'].' '.$r['host_cognome']) ?></td>
                 <td>
-                    <div style="display:flex;gap:6px;">
+                    <div class="button-group">
                         <a href="/CodeRush/pages/risultati.php?id=<?= $r['id'] ?>" class="btn btn-sm btn-outline">Risultati</a>
                         <a href="/CodeRush/pages/rush-detail.php?id=<?= $r['id'] ?>" class="btn btn-sm btn-primary">Analisi</a>
                     </div>

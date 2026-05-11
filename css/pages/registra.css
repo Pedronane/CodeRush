@@ -1,0 +1,49 @@
+@import url('/CodeRush/css/pages/common-pages.css');
+
+.registra-form-wrap {
+    max-width: 640px;
+    animation: fade-up 0.45s ease-out 0.05s both;
+}
+
+.btn-padded {
+    padding: 14px;
+}
+
+.registra-container {
+    max-width: 600px;
+    margin: 0 auto;
+    animation: fade-up 0.45s ease-out 0.05s both;
+}
+
+.registra-form-group {
+    margin-bottom: 20px;
+}
+
+.registra-input {
+    width: 100%;
+}
+
+.registra-submit {
+    margin-top: 20px;
+    width: 100%;
+    padding: 16px;
+    font-size: 15px;
+    border-radius: 14px;
+}
+
+.registra-note {
+    margin-top: 16px;
+    padding: 16px;
+    border-radius: 10px;
+    background: rgba(61, 181, 64, 0.04);
+    border: 1px solid rgba(61, 181, 64, 0.2);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--foreground);
+}
+
+.registra-note-icon {
+    margin-right: 8px;
+}
+
+.pwd-strength { display: none; }

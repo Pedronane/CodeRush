@@ -17,6 +17,7 @@ $pageTitle = 'Lobby — '.$partita['codice_accesso'];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= sanitize($pageTitle) ?> — CodeRush</title>
     <link rel="stylesheet" href="/CodeRush/css/style.css">
+    <link rel="stylesheet" href="/CodeRush/css/pages/lobby.css">
 </head>
 <body>
 
@@ -26,27 +27,27 @@ $pageTitle = 'Lobby — '.$partita['codice_accesso'];
     <div class="bfx-blob bfx-blob-blue"></div>
     <div class="bfx-blob bfx-blob-orange"></div>
 </div>
-<div data-particles="22" style="position:fixed;inset:0;z-index:0;pointer-events:none;"></div>
+<div data-particles="22" class="particles-bg"></div>
 
 <div class="lobby-full">
-    <div class="lobby-inner" style="position:relative;z-index:1;">
+    <div class="lobby-inner lobby-content">
 
         <!-- Left: code + students -->
         <div>
-            <p class="lobby-game-code-label" style="animation:fade-up .3s ease-out both;">Codice partita</p>
-            <div class="game-code" style="animation:fade-up .4s ease-out both;"><?= sanitize($partita['codice_accesso']) ?></div>
-            <p style="color:var(--muted-foreground);font-size:14px;margin-top:12px;animation:fade-up .45s ease-out both;">
+            <p class="lobby-game-code-label anim-30">Codice partita</p>
+            <div class="game-code anim-40"><?= sanitize($partita['codice_accesso']) ?></div>
+            <p class="lobby-subtitle">
                 Condividi questo codice con la classe. Gli studenti appariranno qui sotto.
             </p>
 
-            <div class="lobby-count" id="count-display" style="animation:fade-up .5s ease-out both;">
+            <div class="lobby-count anim-50" id="count-display">
                 <span class="lobby-count-num" id="count-num">0</span>
-                <span style="font-size:14px;color:var(--muted-foreground);">studenti connessi</span>
+                <span class="text-muted-md">studenti connessi</span>
             </div>
 
             <div id="lobby-grid" class="lobby-grid">
-                <p style="color:var(--muted-foreground);grid-column:1/-1;text-align:center;padding:40px 0;">
-                    In attesa che gli studenti si uniscano<span id="dots" style="animation:pulse-soft 1s ease-in-out infinite;display:inline-block;">...</span>
+                <p class="empty-grid-msg">
+                    In attesa che gli studenti si uniscano<span id="dots" class="dots-anim">...</span>
                 </p>
             </div>
         </div>
@@ -55,7 +56,7 @@ $pageTitle = 'Lobby — '.$partita['codice_accesso'];
         <aside>
             <div class="lobby-info-card">
                 <p class="lobby-info-title">Info partita</p>
-                <div style="display:flex;flex-direction:column;gap:8px;">
+                <div class="info-stack">
                     <?php foreach ([
                         ['Consegna',      $partita['domanda_nome']],
                         ['Linguaggio',    $partita['linguaggio_nome']],
@@ -65,12 +66,12 @@ $pageTitle = 'Lobby — '.$partita['codice_accesso'];
                     ] as $row): ?>
                     <div class="info-row">
                         <span class="info-label"><?= $row[0] ?></span>
-                        <span class="info-val" <?= $row[0]==='Linguaggio' ? 'style="color:var(--brand-green);"' : '' ?>><?= sanitize($row[1]) ?></span>
+                        <span class="info-val <?= $row[0]==='Linguaggio' ? 'info-val-green' : '' ?>"><?= sanitize($row[1]) ?></span>
                     </div>
                     <?php endforeach; ?>
                 </div>
                 <?php if ($partita['domanda_testo']): ?>
-                <p style="margin-top:12px;font-size:12px;color:var(--muted-foreground);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">
+                <p class="text-clamp">
                     <?= sanitize($partita['domanda_testo']) ?>
                 </p>
                 <?php endif; ?>
@@ -83,7 +84,7 @@ $pageTitle = 'Lobby — '.$partita['codice_accesso'];
                 onclick="startGame()"
             >
                 ▶ Avvia il Rush
-                <span id="start-hint" style="display:block;font-size:11px;font-weight:600;letter-spacing:.02em;margin-top:4px;opacity:.9;">
+                <span id="start-hint" class="start-hint">
                     Servono almeno 2 studenti
                 </span>
             </button>
@@ -128,7 +129,7 @@ function pollLobby() {
 function renderStudenti(studenti) {
     var grid = document.getElementById('lobby-grid');
     if (studenti.length === 0) {
-        grid.innerHTML = '<p style="color:var(--muted-foreground);grid-column:1/-1;text-align:center;padding:40px 0;">In attesa che gli studenti si uniscano...</p>';
+        grid.innerHTML = '<p class="empty-grid-msg">In attesa che gli studenti si uniscano...</p>';
     } else {
         grid.innerHTML = studenti.map(function(s) {
             var ini = (s.nome[0]||'')+(s.cognome[0]||'');

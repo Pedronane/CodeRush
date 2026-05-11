@@ -46,49 +46,61 @@ $pageTitle = 'Rush — '.$partita['domanda_nome'];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= sanitize($pageTitle) ?> — CodeRush</title>
     <link rel="stylesheet" href="/CodeRush/css/style.css">
+    <link rel="stylesheet" href="/CodeRush/css/pages/game.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/sql/sql.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/php/php.min.js"></script>
 </head>
-<body style="background:var(--background);min-height:100vh;">
+<body class="game-body">
 
 <div class="background-fx" aria-hidden="true">
     <div class="bfx-grid"></div>
-    <div class="bfx-blob bfx-blob-green" style="opacity:.12;"></div>
-    <div class="bfx-blob bfx-blob-blue"  style="opacity:.1;"></div>
+    <div class="bfx-blob bfx-blob-green game-blob-green"></div>
+    <div class="bfx-blob bfx-blob-blue game-blob-blue"></div>
 </div>
 
 <!-- Top bar -->
 <div class="game-topbar" id="game-topbar">
     <div class="game-topbar-inner">
         <span class="phase-pill" style="background:<?= $phaseBg ?>;"><?= $phaseLabel ?></span>
-        <div class="game-timer-big" id="timer-display" style="color:var(--brand-green);"><?= gmdate('i:s',$tempoRimanente) ?></div>
+        <div class="game-timer-big" id="timer-display"><?= gmdate('i:s',$tempoRimanente) ?></div>
     </div>
     <!-- Progress bar -->
-    <div style="height:3px;background:var(--border);">
-        <div id="timer-bar" style="height:100%;background:linear-gradient(90deg,var(--brand-green),var(--brand-blue));width:100%;transition:width .5s linear;"></div>
+    <div class="topbar-style">
+        <div id="timer-bar" class="progress-bar"></div>
     </div>
 </div>
 
 <!-- Phase banner (flash on load) -->
-<div class="game-banner" id="game-banner" style="display:none;">
+<div class="game-banner" id="game-banner">
     <div class="game-banner-box" id="game-banner-box"></div>
 </div>
 
-<main style="max-width:1100px;margin:0 auto;padding:28px 24px;position:relative;z-index:1;">
+<main class="game-main">
 
     <?php if ($partita['stato'] === 'lettura'): ?>
     <!-- READING PHASE -->
-    <div style="max-width:720px;margin:0 auto;animation:fade-up .5s ease-out both;">
+    <div class="reading-phase-card">
         <div class="card">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;">
+            <div class="reading-title">
                 <span class="badge badge-host"><?= sanitize($partita['linguaggio_nome']) ?></span>
-                <span style="font-size:12px;color:var(--muted-foreground);"><?= sanitize($partita['anno'].$partita['sezione'].' '.$partita['indirizzo']) ?></span>
+                <span class="class-info"><?= sanitize($partita['anno'].$partita['sezione'].' '.$partita['indirizzo']) ?></span>
             </div>
-            <h2 style="font-size:22px;font-weight:900;margin-bottom:16px;">Leggi attentamente la consegna</h2>
-            <p style="font-size:16px;line-height:1.8;color:var(--foreground);white-space:pre-wrap;"><?= sanitize($partita['domanda_testo']) ?></p>
-            <p style="margin-top:20px;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted-foreground);">
+            <h2 class="reading-title-text">Leggi attentamente la consegna</h2>
+            <p class="reading-content"><?= sanitize($partita['domanda_testo']) ?></p>
+            <p class="reading-note">
                 La fase di scrittura inizierà automaticamente.
             </p>
             <?php if (isHost()): ?>
-            <div style="margin-top:20px;">
+            <div class="reading-action">
                 <button class="btn-primary-lg" onclick="advancePhase()">Avanza alla scrittura →</button>
             </div>
             <?php endif; ?>
@@ -97,36 +109,35 @@ $pageTitle = 'Rush — '.$partita['domanda_nome'];
 
     <?php elseif ($partita['stato'] === 'scrittura'): ?>
     <!-- WRITING PHASE -->
-    <div style="display:grid;gap:20px;animation:fade-up .5s ease-out both;" class="writing-grid">
+    <div class="writing-phase writing-grid">
 
         <?php if (isStudent() && $myTurno): ?>
         <!-- Student: consegna + editor -->
-        <aside style="display:flex;flex-direction:column;gap:16px;">
-            <div class="card" style="margin-bottom:0;">
-                <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted-foreground);margin-bottom:10px;">Consegna</p>
-                <p style="font-size:13px;line-height:1.7;color:rgba(240,244,250,.9);"><?= sanitize($partita['domanda_testo']) ?></p>
+        <aside class="student-aside">
+            <div class="card aside-card">
+                <p class="aside-label">Consegna</p>
+                <p class="aside-content"><?= sanitize($partita['domanda_testo']) ?></p>
             </div>
             <?php if ($codicePrecedente !== null): ?>
-            <div class="card" style="margin-bottom:0;">
-                <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted-foreground);margin-bottom:10px;">Turno precedente</p>
-                <pre class="code-block" style="font-size:12px;border-radius:10px;"><?= sanitize($codicePrecedente ?: '# (nessun codice)') ?></pre>
+            <div class="card aside-card">
+                <p class="aside-label">Turno precedente</p>
+                <pre class="code-block prev-code"><?= sanitize($codicePrecedente ?: '# (nessun codice)') ?></pre>
             </div>
             <?php endif; ?>
         </aside>
 
         <section>
-            <div style="border-radius:16px;border:2px solid rgba(61,181,64,.4);overflow:hidden;background:var(--card);box-shadow:0 0 40px -12px rgba(61,181,64,.4);transition:border-color .2s;">
-                <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted-foreground);">
+            <div class="editor-container">
+                <div class="editor-header">
                     <span>editor — <?= strtolower(sanitize($partita['linguaggio_nome'])) ?></span>
                     <?php if ($myTurno['submitted_at']): ?>
-                    <span style="color:var(--brand-green);">Consegnato ✓</span>
+                    <span class="editor-submitted">Consegnato ✓</span>
                     <?php endif; ?>
                 </div>
                 <form id="formSubmit" onsubmit="submitCode(event)">
                     <textarea
                         id="codeEditor"
-                        class="code-editor"
-                        style="border:none;border-radius:0;min-height:340px;"
+                        class="code-editor code-editor-textarea"
                         placeholder="Scrivi il tuo codice qui..."
                         <?= $myTurno['submitted_at'] ? 'disabled' : '' ?>
                     ><?= sanitize($myTurno['codice'] ?? ($codicePrecedente ?? '')) ?></textarea>
@@ -137,34 +148,31 @@ $pageTitle = 'Rush — '.$partita['domanda_nome'];
             <button
                 id="btnSubmit"
                 onclick="submitCode(event)"
-                class="btn-primary-lg btn-block"
-                style="margin-top:14px;padding:16px;font-size:15px;border-radius:14px;animation:pulse-soft 2.4s ease-in-out infinite;"
+                class="btn-primary-lg btn-block submit-button"
             >
                 Consegna ✓
             </button>
-            <p id="submit-msg" style="text-align:center;font-size:12px;color:var(--muted-foreground);margin-top:8px;"></p>
+            <p id="submit-msg" class="submit-message"></p>
             <?php else: ?>
-            <div class="alert alert-success" style="margin-top:14px;">Codice consegnato! In attesa degli altri...</div>
+            <div class="alert alert-success success-message">Codice consegnato! In attesa degli altri...</div>
             <?php endif; ?>
         </section>
 
         <?php elseif (isHost()): ?>
         <!-- Host: monitor -->
         <div>
-            <div style="border-radius:16px;border:2px solid rgba(61,181,64,.3);overflow:hidden;background:var(--card);">
-                <div style="padding:12px 18px;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted-foreground);">
+            <div class="host-monitor">
+                <div class="host-header">
                     Monitor host — gli studenti stanno scrivendo
                 </div>
-                <div style="padding:16px;display:flex;flex-direction:column;gap:8px;" id="host-status">
+                <div class="host-status" id="host-status">
                     <?php foreach ($partecipazioni as $p):
                         $t = getTurnoCorrente($partita_id, $p['studente_id'], $partita['round_corrente']);
                         $done = ($t && $t['submitted_at']);
                     ?>
-                    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.02);">
-                        <span style="font-size:13px;font-weight:600;"><?= sanitize($p['cognome'].' '.$p['nome']) ?></span>
-                        <span style="padding:3px 10px;border-radius:20px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;
-                              background:<?= $done ? 'rgba(61,181,64,.18)' : 'rgba(247,148,29,.18)' ?>;
-                              color:<?= $done ? 'var(--brand-green)' : 'var(--brand-orange)' ?>;">
+                    <div class="host-student-row">
+                        <span class="student-name"><?= sanitize($p['cognome'].' '.$p['nome']) ?></span>
+                        <span class="student-status <?= $done ? 'student-done' : 'student-pending' ?>;">
                             <?= $done ? 'Consegnato' : 'In corso' ?>
                         </span>
                     </div>
@@ -173,26 +181,19 @@ $pageTitle = 'Rush — '.$partita['domanda_nome'];
             </div>
             <button
                 onclick="advancePhase()"
-                class="btn-primary-lg btn-block"
-                style="margin-top:14px;padding:16px;font-size:14px;border-radius:14px;background:linear-gradient(135deg,var(--brand-orange),var(--brand-lime));">
+                class="btn-primary-lg btn-block force-next-button">
                 Forza turno successivo →
             </button>
         </div>
 
-        <div class="card" style="margin-bottom:0;">
-            <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted-foreground);margin-bottom:12px;">Consegna</p>
-            <p style="font-size:13px;line-height:1.7;"><?= sanitize($partita['domanda_testo']) ?></p>
+        <div class="card host-card">
+            <p class="aside-label">Consegna</p>
+            <p class="aside-content"><?= sanitize($partita['domanda_testo']) ?></p>
         </div>
         <?php endif; ?>
     </div>
     <?php endif; ?>
 </main>
-
-<style>
-@media (min-width:900px) {
-    .writing-grid { grid-template-columns: 1fr 1.4fr; }
-}
-</style>
 
 <script src="/CodeRush/js/script.js"></script>
 <script>
@@ -203,6 +204,8 @@ var ROUND_INIT   = <?= $partita['round_corrente'] ?>;
 var timerSeconds = <?= $tempoRimanente ?>;
 var totalSeconds = <?= $partita['stato'] === 'lettura' ? $partita['tempo_lettura'] : $partita['tempo_turno'] ?>;
 var timerInterval = null;
+var LINGUAGGIO = <?= json_encode(strtolower($partita['linguaggio_nome'])) ?>;
+var cmEditor = null;
 
 function updateTimerDisplay() {
     var el  = document.getElementById('timer-display');
@@ -231,7 +234,14 @@ function startTimer() {
     if (timerInterval) clearInterval(timerInterval);
     timerInterval = setInterval(function() {
         if (timerSeconds > 0) { timerSeconds--; updateTimerDisplay(); }
-        if (timerSeconds <= 0) { clearInterval(timerInterval); pollGameState(); }
+        if (timerSeconds <= 0) {
+            clearInterval(timerInterval);
+            if (!IS_HOST && STATO_INIT === 'scrittura') {
+                var btn = document.getElementById('btnSubmit');
+                if (btn && !btn.disabled) submitCode(null);
+            }
+            pollGameState();
+        }
     }, 1000);
 }
 
@@ -248,7 +258,7 @@ function pollGameState() {
 
 function submitCode(e) {
     if (e) e.preventDefault();
-    var code = document.getElementById('codeEditor').value;
+    var code = cmEditor ? cmEditor.getValue() : document.getElementById('codeEditor').value;
     var btn  = document.getElementById('btnSubmit');
     var msg  = document.getElementById('submit-msg');
     if (btn) btn.disabled = true;
@@ -260,7 +270,8 @@ function submitCode(e) {
     .then(function(r){return r.json();})
     .then(function(data) {
         if (data.success) {
-            if (document.getElementById('codeEditor')) document.getElementById('codeEditor').disabled = true;
+            if (cmEditor) cmEditor.setOption('readOnly', true);
+            else if (document.getElementById('codeEditor')) document.getElementById('codeEditor').disabled = true;
             if (msg) { msg.textContent='Consegnato! In attesa degli altri...'; msg.style.color='var(--brand-green)'; }
             if (btn) { btn.style.display='none'; }
             if (data.game_ended) setTimeout(function(){ window.location.href='/CodeRush/pages/risultati.php?id='+PARTITA_ID; },1500);
@@ -292,6 +303,28 @@ function advancePhase() {
     box.textContent = label;
     banner.style.display = 'grid';
     setTimeout(function() { banner.style.display='none'; }, 1800);
+})();
+
+(function() {
+    var ta = document.getElementById('codeEditor');
+    if (!ta || typeof CodeMirror === 'undefined') return;
+    var modeMap = {
+        'python':'python', 'javascript':'javascript',
+        'java':'text/x-java', 'c':'text/x-csrc', 'c++':'text/x-c++src',
+        'php':'application/x-httpd-php', 'sql':'text/x-sql',
+        'html/css':'htmlmixed', 'html':'htmlmixed', 'css':'css'
+    };
+    cmEditor = CodeMirror.fromTextArea(ta, {
+        mode: modeMap[LINGUAGGIO] || 'text/plain',
+        theme: 'dracula',
+        lineNumbers: true,
+        tabSize: 4,
+        indentWithTabs: false,
+        indentUnit: 4,
+        readOnly: <?= $myTurno && $myTurno['submitted_at'] ? 'true' : 'false' ?>,
+        extraKeys: { Tab: function(cm) { cm.replaceSelection('    '); } }
+    });
+    cmEditor.setSize('100%', '340px');
 })();
 
 startTimer();

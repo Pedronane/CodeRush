@@ -55,10 +55,11 @@ foreach ($linguaggi as $l) {
 
 $pageTitle = 'Linguaggi';
 require_once __DIR__ . '/../includes/header.php';
+<link rel="stylesheet" href="/CodeRush/css/pages/linguaggi.css">
 ?>
 <main class="container">
 
-    <div class="breadcrumb" style="animation:fade-up .35s ease-out both;">
+    <div class="breadcrumb page-section-breadcrumb">
         <a href="/CodeRush/">Home</a>
         <span class="breadcrumb-sep">›</span>
         <a href="/CodeRush/pages/consegne.php">Consegne</a>
@@ -66,7 +67,7 @@ require_once __DIR__ . '/../includes/header.php';
         <span>Linguaggi</span>
     </div>
 
-    <div class="page-header" style="animation:fade-up .4s ease-out both;">
+    <div class="page-header page-section-header">
         <div>
             <h1>Linguaggi di programmazione</h1>
             <p class="page-subtitle"><?= count($linguaggi) ?> linguagg<?= count($linguaggi) !== 1 ? 'i' : 'io' ?> disponibil<?= count($linguaggi) !== 1 ? 'i' : 'e' ?></p>
@@ -74,17 +75,17 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <?php if (!empty($errors)): ?>
-    <div class="alert alert-danger" style="animation:fade-up .3s ease-out both;"><?= implode('<br>', array_map('sanitize', $errors)) ?></div>
+    <div class="alert alert-danger page-section-alert"><?= implode('<br>', array_map('sanitize', $errors)) ?></div>
     <?php endif; ?>
     <?php if ($success): ?>
-    <div class="alert alert-success" style="animation:fade-up .3s ease-out both;"><?= sanitize($success) ?></div>
+    <div class="alert alert-success page-section-alert"><?= sanitize($success) ?></div>
     <?php endif; ?>
 
-    <div style="display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start;" class="lang-layout">
+    <div class="lang-layout">
 
-        <div class="card card-no-pad" style="animation:fade-up .45s ease-out .05s both;">
-            <div style="padding:14px 20px;border-bottom:1px solid var(--border);">
-                <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted-foreground);">Linguaggi disponibili</span>
+        <div class="card card-no-pad page-section-content">
+            <div class="card-header">
+                <span class="card-header-label">Linguaggi disponibili</span>
             </div>
             <?php if (empty($linguaggi)): ?>
             <div class="empty-state"><p>Nessun linguaggio. Aggiungine uno.</p></div>
@@ -94,15 +95,15 @@ require_once __DIR__ . '/../includes/header.php';
                     <tr>
                         <th>#</th>
                         <th>Nome</th>
-                        <th style="width:100px;"></th>
+                        <th class="col-100"></th>
                     </tr>
                 </thead>
                 <tbody>
                 <?php foreach ($linguaggi as $i => $lang): ?>
                 <tr>
-                    <td style="color:var(--muted-foreground);font-family:'JetBrains Mono',monospace;font-size:12px;"><?= $i + 1 ?></td>
+                    <td class="table-cell-date"><?= $i + 1 ?></td>
                     <td>
-                        <span class="badge badge-host" style="font-size:12px;padding:4px 12px;"><?= sanitize($lang['nome']) ?></span>
+                        <span class="badge badge-host badge-lang"><?= sanitize($lang['nome']) ?></span>
                     </td>
                     <td>
                         <a href="?edit=<?= $lang['id'] ?>" class="btn btn-sm btn-outline">Modifica</a>
@@ -114,10 +115,10 @@ require_once __DIR__ . '/../includes/header.php';
             <?php endif; ?>
         </div>
 
-        <div style="display:flex;flex-direction:column;gap:16px;animation:fade-up .45s ease-out .1s both;">
+        <div class="sidebar-stack page-section-secondary">
             <?php if ($editLang): ?>
-            <div class="card" style="border-color:rgba(74,143,212,.4);">
-                <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--brand-blue);margin-bottom:14px;">Modifica linguaggio</p>
+            <div class="card card-accent-blue">
+                <p class="section-label-blue">Modifica linguaggio</p>
                 <form method="POST" novalidate>
                     <input type="hidden" name="action" value="edit">
                     <input type="hidden" name="id" value="<?= $editLang['id'] ?>">
@@ -125,7 +126,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <label class="form-label">Nome</label>
                         <input type="text" name="nome" class="input-arena" value="<?= sanitize($editLang['nome']) ?>" required maxlength="100">
                     </div>
-                    <div style="display:flex;gap:8px;">
+                    <div class="form-button-row">
                         <button type="submit" class="btn-primary-lg">Salva</button>
                         <a href="/CodeRush/pages/linguaggi.php" class="btn-ghost">Annulla</a>
                     </div>
@@ -134,7 +135,7 @@ require_once __DIR__ . '/../includes/header.php';
             <?php endif; ?>
 
             <div class="card">
-                <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted-foreground);margin-bottom:14px;">Aggiungi linguaggio</p>
+                <p class="section-label-blue">Aggiungi linguaggio</p>
                 <form method="POST" novalidate id="formLang">
                     <input type="hidden" name="action" value="create">
                     <div class="form-group">
@@ -148,9 +149,6 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
     </div>
 </main>
-<style>
-@media (max-width:700px) { .lang-layout { grid-template-columns:1fr !important; } }
-</style>
 <script src="/CodeRush/js/script.js"></script>
 </body>
 </html>

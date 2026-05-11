@@ -11,16 +11,17 @@ $linguaggi = getAllLinguaggi();
 
 $pageTitle = 'Consegne';
 require_once __DIR__ . '/../includes/header.php';
+<link rel="stylesheet" href="/CodeRush/css/pages/consegne.css">
 ?>
 <main class="container">
 
-    <div class="breadcrumb" style="animation:fade-up .35s ease-out both;">
+    <div class="breadcrumb page-section-breadcrumb">
         <a href="/CodeRush/">Home</a>
         <span class="breadcrumb-sep">›</span>
         <span>Consegne</span>
     </div>
 
-    <div class="page-header" style="animation:fade-up .4s ease-out both;">
+    <div class="page-header page-section-header">
         <div>
             <h1>Consegne</h1>
             <p class="page-subtitle"><?= count($domande) ?> consegna<?= count($domande) !== 1 ? 'e' : '' ?> trovata<?= count($domande) !== 1 ? 'e' : '' ?></p>
@@ -29,16 +30,15 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <!-- Search bar -->
-    <form method="GET" style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;animation:fade-up .45s ease-out .05s both;">
+    <form method="GET" class="filter-row page-section-content">
         <input
             type="text"
             name="search"
-            class="input-arena"
+            class="input-arena filter-input"
             placeholder="🔍  Cerca per nome..."
             value="<?= sanitize($search) ?>"
-            style="flex:1;min-width:220px;"
         >
-        <select name="linguaggio" class="input-arena" style="width:auto;min-width:180px;">
+        <select name="linguaggio" class="input-arena filter-select">
             <option value="0">Tutti i linguaggi</option>
             <?php foreach ($linguaggi as $lang): ?>
             <option value="<?= $lang['id'] ?>" <?= $linguaggio_id == $lang['id'] ? 'selected' : '' ?>>
@@ -52,7 +52,7 @@ require_once __DIR__ . '/../includes/header.php';
         <?php endif; ?>
     </form>
 
-    <div class="card card-no-pad" style="animation:fade-up .45s ease-out .1s both;">
+    <div class="card card-no-pad page-section-secondary">
         <?php if (empty($domande)): ?>
         <div class="empty-state">
             <p>Nessuna consegna trovata.</p>
@@ -65,22 +65,22 @@ require_once __DIR__ . '/../includes/header.php';
                     <th>Nome</th>
                     <th>Linguaggio</th>
                     <th>Difficoltà</th>
-                    <th style="width:100px;"></th>
+                    <th class="col-100"></th>
                 </tr>
             </thead>
             <tbody>
             <?php foreach ($domande as $d): ?>
             <tr>
                 <td>
-                    <div style="font-weight:700;"><?= sanitize($d['nome']) ?></div>
-                    <div style="font-size:12px;color:var(--muted-foreground);margin-top:2px;max-width:420px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">
+                    <div class="table-cell-name"><?= sanitize($d['nome']) ?></div>
+                    <div class="table-desc">
                         <?= sanitize($d['testo']) ?>
                     </div>
                 </td>
                 <td><span class="badge badge-host"><?= sanitize($d['linguaggio_nome']) ?></span></td>
                 <td>
                     <?php if ($d['difficolta'] === null): ?>
-                    <span style="color:var(--muted-foreground);">—</span>
+                    <span class="text-muted-td">—</span>
                     <?php elseif ($d['difficolta'] == 0): ?>
                     <span class="badge badge-facile">Facile</span>
                     <?php else: ?>
@@ -97,8 +97,8 @@ require_once __DIR__ . '/../includes/header.php';
         <?php endif; ?>
     </div>
 
-    <p style="font-size:12px;color:var(--muted-foreground);margin-top:12px;animation:fade-up .4s ease-out .2s both;">
-        <a href="/CodeRush/pages/linguaggi.php" style="color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;">Gestisci linguaggi →</a>
+    <p class="page-footer-note">
+        <a href="/CodeRush/pages/linguaggi.php" class="link-muted">Gestisci linguaggi →</a>
     </p>
 </main>
 <script src="/CodeRush/js/script.js"></script>

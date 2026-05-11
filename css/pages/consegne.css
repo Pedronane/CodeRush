@@ -1,0 +1,111 @@
+@import url('/CodeRush/css/pages/common-pages.css');
+
+.filter-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.filter-input {
+    flex: 1;
+    min-width: 220px;
+}
+
+.filter-select {
+    width: auto;
+    min-width: 180px;
+}
+
+.table-desc {
+    font-size: 12px;
+    color: var(--muted-foreground);
+    margin-top: 2px;
+    max-width: 420px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.text-muted-td {
+    color: var(--muted-foreground);
+}
+
+.page-footer-note {
+    font-size: 12px;
+    color: var(--muted-foreground);
+    margin-top: 12px;
+}
+
+.link-muted {
+    color: var(--muted-foreground);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.consegne-section {
+    animation: fade-up 0.45s ease-out 0.05s both;
+}
+
+.consegne-table-container {
+    overflow-x: auto;
+}
+
+.consegna-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.consegna-row:last-child {
+    border-bottom: none;
+}
+
+.consegna-name {
+    font-weight: 600;
+    flex: 1;
+}
+
+.consegna-linguaggio {
+    font-size: 12px;
+    color: var(--muted-foreground);
+}
+
+.consegna-language-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: rgba(61, 181, 64, 0.15);
+    color: var(--brand-green);
+}
+
+.consegne-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.add-consegna-section {
+    animation: fade-up 0.45s ease-out 0.1s both;
+}
+
+.add-consegna-form {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.form-control-half {
+    flex: 0.5;
+    min-width: 150px;
+}
+
+.empty-consegne {
+    text-align: center;
+    padding: 40px 20px;
+}
