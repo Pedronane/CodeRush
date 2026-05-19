@@ -63,6 +63,15 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    min-width: 0;
+}
+
+.sidebar-stack .form-row > .form-group {
+    min-width: 0;
+}
+
+.sidebar-stack .input-arena {
+    max-width: 100%;
 }
 
 .classi-grid {
