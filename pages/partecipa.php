@@ -5,8 +5,8 @@ if (!isStudent()) { header('Location: /CodeRush/login.php'); exit(); }
 
 $pageTitle = 'Partecipa al Rush';
 require_once __DIR__ . '/../includes/header.php';
-<link rel="stylesheet" href="/CodeRush/css/pages/partecipa.css">
 ?>
+<link rel="stylesheet" href="/CodeRush/css/pages/partecipa.css">
 <main class="partecipa-main">
     <div data-particles="20" class="particles-bg-abs"></div>
 

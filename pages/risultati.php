@@ -15,8 +15,8 @@ if (isStudent()) {
 
 $pageTitle = 'Risultati — '.$partita['domanda_nome'];
 require_once __DIR__ . '/../includes/header.php';
-<link rel="stylesheet" href="/CodeRush/css/pages/risultati.css">
 ?>
+<link rel="stylesheet" href="/CodeRush/css/pages/risultati.css">
 <main class="container">
 
     <div class="breadcrumb page-section-breadcrumb">

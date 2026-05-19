@@ -41,8 +41,8 @@ $initials = strtoupper(mb_substr($user['nome'],0,1).mb_substr($user['cognome'],0
 $isHost   = isHost();
 $pageTitle = 'Profilo';
 require_once __DIR__ . '/../includes/header.php';
-<link rel="stylesheet" href="/CodeRush/css/pages/profilo.css">
 ?>
+<link rel="stylesheet" href="/CodeRush/css/pages/profilo.css">
 <main class="container">
 
     <div class="breadcrumb">

@@ -13,8 +13,8 @@ if ($editId > 0) {
     if (!$editClasse) $editId = 0;
 }
 
-$indirizzi = ['Informatica','Meccanica','Elettronica','Chimica','Costruzioni','Logistica','Turismo','Agraria','Grafica','Moda'];
-$sezioni   = range('A', 'K');
+$indirizzi = ['Informatica','Grafica','Meccanica','Telecomunicazioni'];
+$sezioni   = range('A', 'C');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action   = $_POST['action'] ?? '';
@@ -53,8 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $classi    = getAllClassi();
 $pageTitle = 'Classi';
 require_once __DIR__ . '/../includes/header.php';
-<link rel="stylesheet" href="/CodeRush/css/pages/classi.css">
 ?>
+<link rel="stylesheet" href="/CodeRush/css/pages/classi.css">
 <main class="container">
 
     <div class="breadcrumb page-section-breadcrumb">

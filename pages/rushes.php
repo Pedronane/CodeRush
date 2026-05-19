@@ -10,8 +10,8 @@ if (!$classe) { header('Location: /CodeRush/pages/classi.php'); exit(); }
 $rushes    = getRushByClasse($classe_id);
 $pageTitle = 'Rush — '.$classe['anno'].$classe['sezione'].' '.$classe['indirizzo'];
 require_once __DIR__ . '/../includes/header.php';
-<link rel="stylesheet" href="/CodeRush/css/pages/rushes.css">
 ?>
+<link rel="stylesheet" href="/CodeRush/css/pages/rushes.css">
 <main class="container">
 
     <div class="breadcrumb page-section-breadcrumb">

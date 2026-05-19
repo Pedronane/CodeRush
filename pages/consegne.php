@@ -11,8 +11,8 @@ $linguaggi = getAllLinguaggi();
 
 $pageTitle = 'Consegne';
 require_once __DIR__ . '/../includes/header.php';
-<link rel="stylesheet" href="/CodeRush/css/pages/consegne.css">
 ?>
+<link rel="stylesheet" href="/CodeRush/css/pages/consegne.css">
 <main class="container">
 
     <div class="breadcrumb page-section-breadcrumb">

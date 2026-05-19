@@ -55,8 +55,8 @@ foreach ($linguaggi as $l) {
 
 $pageTitle = 'Linguaggi';
 require_once __DIR__ . '/../includes/header.php';
-<link rel="stylesheet" href="/CodeRush/css/pages/linguaggi.css">
 ?>
+<link rel="stylesheet" href="/CodeRush/css/pages/linguaggi.css">
 <main class="container">
 
     <div class="breadcrumb page-section-breadcrumb">

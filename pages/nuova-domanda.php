@@ -54,8 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $linguaggi = getAllLinguaggi();
 $pageTitle = $isEdit ? 'Modifica consegna' : 'Nuova consegna';
 require_once __DIR__ . '/../includes/header.php';
-<link rel="stylesheet" href="/CodeRush/css/pages/nuova-domanda.css">
 ?>
+<link rel="stylesheet" href="/CodeRush/css/pages/nuova-domanda.css">
 <main class="container">
 
     <div class="breadcrumb page-section-breadcrumb">

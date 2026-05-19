@@ -38,8 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $pageTitle = 'Registra utente';
 require_once __DIR__ . '/../includes/header.php';
-<link rel="stylesheet" href="/CodeRush/css/pages/registra.css">
 ?>
+<link rel="stylesheet" href="/CodeRush/css/pages/registra.css">
 <main class="container">
 
     <div class="breadcrumb page-section-breadcrumb">
