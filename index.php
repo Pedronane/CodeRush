@@ -6,7 +6,6 @@ if (!isLoggedIn()) { header('Location: /CodeRush/login.php'); exit(); }
 $pageTitle = 'Home';
 require_once __DIR__ . '/includes/header.php';
 ?>
-<link rel="stylesheet" href="/CodeRush/css/pages/home.css">
 <main class="container">
 
 <?php if (isHost()):
