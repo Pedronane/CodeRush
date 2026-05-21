@@ -641,6 +641,15 @@ tbody tr { animation: fade-up .4s ease-out both; }
 }
 .code-block-empty { color:var(--muted-foreground); font-style:italic; }
 
+/* ── DIFF ────────────────────────────────────────────────── */
+.diff-section { margin-top:.75rem; }
+.diff-summary {
+  cursor:pointer; color:var(--accent); font-size:.85rem;
+  padding:.4rem 0; user-select:none; list-style:none;
+}
+.diff-summary::-webkit-details-marker { display:none; }
+.diff-content { margin-top:.5rem; }
+
 /* ── LOBBY ───────────────────────────────────────────────── */
 .lobby-grid {
   display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
