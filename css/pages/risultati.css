@@ -213,16 +213,19 @@
 }
 
 .host-grade-input {
-    width: 58px;
+    width: 72px;
     text-align: center;
     font-size: 15px;
     font-weight: 700;
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 5px 8px;
+    padding: 5px 10px;
     color: var(--foreground);
     font-family: 'JetBrains Mono', monospace;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
     transition: border-color .15s;
 }
 

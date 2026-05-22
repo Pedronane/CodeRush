@@ -97,8 +97,12 @@ function escHtml(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt
                     <?php else: ?>
                     <span class="host-grade-badge" id="hgb-<?= $part['id'] ?>" style="display:none;"></span>
                     <?php endif; ?>
-                    <input type="number" class="host-grade-input" id="hgi-<?= $part['id'] ?>"
-                           min="1" max="10" value="<?= $votoHost ?? '' ?>" placeholder="—">
+                    <select class="host-grade-input" id="hgi-<?= $part['id'] ?>">
+                        <option value="">—</option>
+                        <?php for ($v = 1; $v <= 10; $v++): ?>
+                        <option value="<?= $v ?>" <?= $votoHost == $v ? 'selected' : '' ?>><?= $v ?></option>
+                        <?php endfor; ?>
+                    </select>
                     <button type="button" class="btn btn-sm btn-primary"
                             onclick="saveGrade(<?= $part['id'] ?>)">Salva</button>
                 </div>
@@ -172,7 +176,7 @@ function escHtml(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt
 function saveGrade(slotId) {
     var inp = document.getElementById('hgi-' + slotId);
     var val = parseInt(inp.value);
-    if (!val || val < 1 || val > 10) { inp.style.borderColor = 'var(--brand-danger)'; return; }
+    if (!val || val < 1 || val > 10) { inp.style.borderColor = 'var(--brand-danger)'; inp.focus(); return; }
     inp.style.borderColor = '';
     fetch('/CodeRush/api/api.php', {
         method: 'POST',
