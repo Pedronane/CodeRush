@@ -46,7 +46,7 @@ function escHtml(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt
             </p>
         </div>
         <div class="action-row">
-            <a href="/CodeRush/" class="btn-ghost">← Home</a>
+            <a href="#" onclick="goBack();return false;" class="btn-ghost">← Indietro</a>
         </div>
     </div>
 
@@ -166,13 +166,13 @@ function escHtml(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt
     <?php endforeach; ?>
 
     <div class="results-actions">
-        <a href="/CodeRush/" class="btn-ghost">← Home</a>
-        <?php if (isHost()): ?>
-        <a href="/CodeRush/pages/classe.php?id=<?= $partita['classe_id'] ?>" class="btn-ghost">← Torna alla classe</a>
-        <?php endif; ?>
+        <a href="#" onclick="goBack();return false;" class="btn-ghost">← Indietro</a>
     </div>
 </main>
 <script>
+function goBack() {
+    if (history.length > 1) { history.back(); } else { location.href = '/CodeRush/'; }
+}
 <?php if (isHost()): ?>
 function saveGrade(slotId) {
     var inp = document.getElementById('hgi-' + slotId);
