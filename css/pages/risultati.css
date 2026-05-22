@@ -6,17 +6,22 @@
     flex-wrap: wrap;
 }
 
-.chain-header {
+.chain-participant {
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-.turn-number-sm {
+.participant-avatar {
     width: 34px;
     height: 34px;
     font-size: 13px;
     flex-shrink: 0;
+}
+
+.participant-info {
+    display: flex;
+    flex-direction: column;
 }
 
 .participant-name {
@@ -185,3 +190,8 @@
 }
 
 .badge-lang { margin-right: 6px; }
+
+.turn-time {
+    color: var(--muted-foreground);
+    font-size: 12px;
+}

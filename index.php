@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . '/includes/functions.php';
+// Guardia di accesso: pagina riservata agli utenti autenticati
 if (!isLoggedIn()) { header('Location: /CodeRush/login.php'); exit(); }
 
 $pageTitle = 'Home';
@@ -35,10 +36,11 @@ require_once __DIR__ . '/includes/header.php';
     <div class="card" style="margin-top:8px;">
         <div class="card-title">Azioni rapide</div>
         <div style="display:flex;gap:12px;flex-wrap:wrap;">
-            <a href="/CodeRush/pages/rush.php"      class="btn-primary-lg">🚀 Nuovo Rush</a>
-            <a href="/CodeRush/pages/consegne.php"  class="btn-ghost">📋 Consegne</a>
-            <a href="/CodeRush/pages/classi.php"    class="btn-ghost">🎓 Classi</a>
-            <a href="/CodeRush/pages/registra.php"  class="btn-ghost">👤 Utenti</a>
+            <a href="/CodeRush/pages/rush.php"         class="btn-primary-lg">🚀 Nuovo Rush</a>
+            <a href="/CodeRush/pages/storico-rush.php" class="btn-ghost">📜 Storico</a>
+            <a href="/CodeRush/pages/consegne.php"     class="btn-ghost">📋 Consegne</a>
+            <a href="/CodeRush/pages/classi.php"       class="btn-ghost">🎓 Classi</a>
+            <a href="/CodeRush/pages/registra.php"     class="btn-ghost">👤 Utenti</a>
         </div>
     </div>
 

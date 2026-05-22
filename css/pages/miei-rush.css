@@ -1,0 +1,240 @@
+@import url('/CodeRush/css/pages/common-pages.css');
+
+/* ── Layout ───────────────────────────────────────────────── */
+
+.mr-header {
+    animation: fade-up 0.4s ease-out both;
+}
+
+.mr-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+    animation: fade-up 0.4s ease-out 0.05s both;
+}
+
+.mr-stat {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    text-align: center;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.mr-stat:hover {
+    border-color: rgba(255,255,255,.15);
+    box-shadow: 0 4px 20px rgba(0,0,0,.2);
+}
+
+.mr-stat-value {
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.mr-stat-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--muted-foreground);
+}
+
+.mr-stat-total  .mr-stat-value { color: var(--brand-blue); }
+.mr-stat-ok     .mr-stat-value { color: var(--brand-green); }
+.mr-stat-parz   .mr-stat-value { color: var(--brand-orange); }
+.mr-stat-ko     .mr-stat-value { color: var(--brand-danger, #e84343); }
+
+/* ── Filters ──────────────────────────────────────────────── */
+
+.mr-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+    animation: fade-up 0.4s ease-out 0.1s both;
+}
+
+.mr-filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.mr-filter-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--muted-foreground);
+    margin-right: 4px;
+    white-space: nowrap;
+}
+
+.mr-pill {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted-foreground);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+    white-space: nowrap;
+}
+
+.mr-pill:hover {
+    border-color: rgba(255,255,255,.25);
+    color: var(--foreground);
+}
+
+.mr-pill.active-all      { background: rgba(74,143,212,.18); border-color: var(--brand-blue); color: var(--brand-blue); }
+.mr-pill.active-corretto { background: rgba(61,181,64,.18);  border-color: var(--brand-green); color: var(--brand-green); }
+.mr-pill.active-parziale { background: rgba(247,148,29,.18); border-color: var(--brand-orange); color: var(--brand-orange); }
+.mr-pill.active-sbagliato{ background: rgba(232,67,67,.18);  border-color: #e84343; color: #e84343; }
+.mr-pill.active-attesa   { background: rgba(154,163,176,.18);border-color: var(--muted-foreground); color: var(--muted-foreground); }
+.mr-pill.active-lang     { background: rgba(74,143,212,.18); border-color: var(--brand-blue); color: var(--brand-blue); }
+
+/* ── Rush cards ───────────────────────────────────────────── */
+
+.mr-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    animation: fade-up 0.4s ease-out 0.15s both;
+}
+
+.mr-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: border-color .2s, box-shadow .2s;
+    border-left: 4px solid transparent;
+}
+
+.mr-card:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,.18);
+}
+
+.mr-card[data-voto="corretto"]  { border-left-color: var(--brand-green); }
+.mr-card[data-voto="parziale"]  { border-left-color: var(--brand-orange); }
+.mr-card[data-voto="sbagliato"] { border-left-color: #e84343; }
+.mr-card[data-voto=""]          { border-left-color: var(--border); }
+
+.mr-card-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.mr-card-name {
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mr-card-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--muted-foreground);
+}
+
+.mr-card-meta .sep {
+    color: var(--border);
+}
+
+.mr-card-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+/* Language badges */
+.mr-lang {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.mr-lang[data-n="Python"]     { background: rgba(74,143,212,.2);  color: #60a5fa; }
+.mr-lang[data-n="JavaScript"] { background: rgba(247,148,29,.2);  color: #F7941D; }
+.mr-lang[data-n="Java"]       { background: rgba(248,81,73,.15);  color: #f87171; }
+.mr-lang[data-n="C"]          { background: rgba(154,163,176,.15);color: #9ca3b0; }
+.mr-lang[data-n="C++"]        { background: rgba(74,143,212,.2);  color: #7dd3fc; }
+.mr-lang[data-n="PHP"]        { background: rgba(167,139,250,.2); color: #a78bfa; }
+.mr-lang[data-n="SQL"]        { background: rgba(45,212,191,.15); color: #2dd4bf; }
+.mr-lang[data-n="HTML/CSS"]   { background: rgba(247,148,29,.2);  color: #fb923c; }
+
+/* ── Empty state ──────────────────────────────────────────── */
+
+.mr-empty {
+    text-align: center;
+    padding: 64px 20px;
+    animation: fade-up .4s ease-out both;
+}
+
+.mr-empty-icon {
+    font-size: 52px;
+    margin-bottom: 16px;
+}
+
+.mr-empty-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.mr-empty-sub {
+    font-size: 14px;
+    color: var(--muted-foreground);
+    margin-bottom: 24px;
+}
+
+.mr-no-results {
+    text-align: center;
+    padding: 32px;
+    color: var(--muted-foreground);
+    font-size: 14px;
+    display: none;
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+
+@media (max-width: 700px) {
+    .mr-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .mr-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .mr-card-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 400px) {
+    .mr-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+}

@@ -43,12 +43,14 @@ if (isLoggedIn()) {
     <ul class="nav-links">
         <li><a href="<?= BASE_URL ?>/" <?= (basename($_SERVER['PHP_SELF']) === 'index.php') ? 'class="active"' : '' ?>>Home</a></li>
         <?php if (isHost()): ?>
-        <li><a href="<?= BASE_URL ?>/pages/rush.php"     <?= (basename($_SERVER['PHP_SELF']) === 'rush.php')     ? 'class="active"' : '' ?>>Nuovo Rush</a></li>
-        <li><a href="<?= BASE_URL ?>/pages/consegne.php" <?= (basename($_SERVER['PHP_SELF']) === 'consegne.php') ? 'class="active"' : '' ?>>Consegne</a></li>
-        <li><a href="<?= BASE_URL ?>/pages/classi.php"   <?= (basename($_SERVER['PHP_SELF']) === 'classi.php')   ? 'class="active"' : '' ?>>Classi</a></li>
-        <li><a href="<?= BASE_URL ?>/pages/registra.php" <?= (basename($_SERVER['PHP_SELF']) === 'registra.php') ? 'class="active"' : '' ?>>Utenti</a></li>
+        <li><a href="<?= BASE_URL ?>/pages/rush.php"          <?= (basename($_SERVER['PHP_SELF']) === 'rush.php')          ? 'class="active"' : '' ?>>Nuovo Rush</a></li>
+        <li><a href="<?= BASE_URL ?>/pages/storico-rush.php"  <?= (basename($_SERVER['PHP_SELF']) === 'storico-rush.php')  ? 'class="active"' : '' ?>>Storico</a></li>
+        <li><a href="<?= BASE_URL ?>/pages/consegne.php"      <?= (basename($_SERVER['PHP_SELF']) === 'consegne.php')      ? 'class="active"' : '' ?>>Consegne</a></li>
+        <li><a href="<?= BASE_URL ?>/pages/classi.php"        <?= (basename($_SERVER['PHP_SELF']) === 'classi.php')        ? 'class="active"' : '' ?>>Classi</a></li>
+        <li><a href="<?= BASE_URL ?>/pages/registra.php"      <?= (basename($_SERVER['PHP_SELF']) === 'registra.php')      ? 'class="active"' : '' ?>>Utenti</a></li>
         <?php else: ?>
-        <li><a href="<?= BASE_URL ?>/pages/partecipa.php" <?= (basename($_SERVER['PHP_SELF']) === 'partecipa.php') ? 'class="active"' : '' ?>>Partecipa al Rush</a></li>
+        <li><a href="<?= BASE_URL ?>/pages/partecipa.php"  <?= (basename($_SERVER['PHP_SELF']) === 'partecipa.php')  ? 'class="active"' : '' ?>>Partecipa al Rush</a></li>
+        <li><a href="<?= BASE_URL ?>/pages/miei-rush.php" <?= (basename($_SERVER['PHP_SELF']) === 'miei-rush.php') ? 'class="active"' : '' ?>>I miei Rush</a></li>
         <li><a href="<?= BASE_URL ?>/pages/profilo.php"   <?= (basename($_SERVER['PHP_SELF']) === 'profilo.php')   ? 'class="active"' : '' ?>>Profilo</a></li>
         <?php endif; ?>
     </ul>

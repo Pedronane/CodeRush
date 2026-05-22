@@ -229,6 +229,34 @@ function getPartiteByStudente($studente_id) {
     return $stmt->fetchAll();
 }
 
+function getRushesStorico($host_id) {
+    $db = getDB();
+    $stmt = $db->prepare(
+        'SELECT p.id, p.created_at, p.classe_id,
+                c.anno, c.sezione, c.indirizzo,
+                p.domanda_id, d.nome AS domanda_nome,
+                l.id AS linguaggio_id, l.nome AS linguaggio_nome,
+                GROUP_CONCAT(par.studente_id ORDER BY par.studente_id) AS studente_ids,
+                COUNT(par.id) AS n_partecipanti
+         FROM partite p
+         JOIN domande d ON d.id = p.domanda_id
+         JOIN linguaggi l ON l.id = d.linguaggio_id
+         JOIN classi c ON c.id = p.classe_id
+         LEFT JOIN partecipazioni par ON par.partita_id = p.id
+         WHERE p.host_id = ? AND p.stato = "finita"
+         GROUP BY p.id
+         ORDER BY p.created_at DESC'
+    );
+    $stmt->execute([$host_id]);
+    $rows = $stmt->fetchAll();
+    foreach ($rows as &$r) {
+        $r['studente_ids'] = $r['studente_ids']
+            ? array_map('intval', explode(',', $r['studente_ids']))
+            : [];
+    }
+    return $rows;
+}
+
 function getRushByClasse($classe_id) {
     $db = getDB();
     $stmt = $db->prepare(
