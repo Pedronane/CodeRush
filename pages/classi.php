@@ -6,7 +6,7 @@ if (!isHost()) { header('Location: /CodeRush/login.php'); exit(); }
 $db = getDB();
 $errors  = [];
 $success = '';
-$editId  = isset($_GET['edit']) ? (int)$_GET['edit'] : 0;
+$editId  = isset($_POST['edit_id']) ? (int)$_POST['edit_id'] : (isset($_GET['edit']) ? (int)$_GET['edit'] : 0);
 $editClasse = null;
 if ($editId > 0) {
     $editClasse = getClasseById($editId);
@@ -28,6 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($errors)) {
         if ($action === 'edit' && $editId > 0) {
+            // In modifica si esclude la classe stessa dal controllo di unicità
             $chk = $db->prepare('SELECT id FROM classi WHERE anno=? AND sezione=? AND indirizzo=? AND id!=?');
             $chk->execute([$anno,$sezione,$indirizzo,$editId]);
             if ($chk->fetch()) {
@@ -119,7 +120,13 @@ require_once __DIR__ . '/../includes/header.php';
                     <td>
                         <div class="button-group">
                             <a href="/CodeRush/pages/classe.php?id=<?= $cl['id'] ?>" class="btn btn-sm btn-primary">Apri</a>
-                            <a href="?edit=<?= $cl['id'] ?>" class="btn btn-sm btn-outline">Modifica</a>
+                            <button type="button" class="btn btn-sm btn-outline btn-edit-classe"
+                                data-id="<?= $cl['id'] ?>"
+                                data-anno="<?= $cl['anno'] ?>"
+                                data-sezione="<?= htmlspecialchars($cl['sezione'], ENT_QUOTES) ?>"
+                                data-indirizzo="<?= htmlspecialchars($cl['indirizzo'], ENT_QUOTES) ?>">
+                                Modifica
+                            </button>
                         </div>
                     </td>
                 </tr>
@@ -131,45 +138,6 @@ require_once __DIR__ . '/../includes/header.php';
 
         <!-- Forms -->
         <div class="sidebar-stack page-section-secondary">
-
-            <?php if ($editClasse): ?>
-            <div class="card card-accent-blue">
-                <p class="section-label-blue">Modifica classe</p>
-                <form method="POST" novalidate>
-                    <input type="hidden" name="action" value="edit">
-                    <div class="form-group">
-                        <label class="form-label">Anno</label>
-                        <select name="anno" class="input-arena" required>
-                            <?php for ($i = 1; $i <= 5; $i++): ?>
-                            <option value="<?= $i ?>" <?= $editClasse['anno'] == $i ? 'selected' : '' ?>><?= $i ?>° anno</option>
-                            <?php endfor; ?>
-                        </select>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Sezione</label>
-                            <select name="sezione" class="input-arena" required>
-                                <?php foreach ($sezioni as $s): ?>
-                                <option value="<?= $s ?>" <?= $editClasse['sezione'] === $s ? 'selected' : '' ?>><?= $s ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Indirizzo</label>
-                            <select name="indirizzo" class="input-arena" required>
-                                <?php foreach ($indirizzi as $ind): ?>
-                                <option value="<?= $ind ?>" <?= $editClasse['indirizzo'] === $ind ? 'selected' : '' ?>><?= $ind ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-button-row mt-4">
-                        <button type="submit" class="btn-primary-lg btn-flex">Salva</button>
-                        <a href="/CodeRush/pages/classi.php" class="btn-ghost">Annulla</a>
-                    </div>
-                </form>
-            </div>
-            <?php endif; ?>
 
             <div class="card">
                 <p class="card-header-label">Crea nuova classe</p>
@@ -207,6 +175,107 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
     </div>
 </main>
+
+<!-- Edit Modal -->
+<div id="editModal" class="modal-overlay" style="display:none;" aria-modal="true" role="dialog">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div class="modal-title">
+                Modifica classe
+                <span class="modal-class-badge" id="modalBadge"></span>
+            </div>
+            <button type="button" class="modal-close" id="modalClose" aria-label="Chiudi">✕</button>
+        </div>
+        <div class="modal-body">
+            <?php if (!empty($errors) && $editId > 0): ?>
+            <div class="alert alert-danger" style="margin-bottom:16px;"><?= implode('<br>', array_map('sanitize', $errors)) ?></div>
+            <?php endif; ?>
+            <form method="POST" novalidate id="editClasseForm">
+                <input type="hidden" name="action" value="edit">
+                <input type="hidden" name="edit_id" id="modalEditId" value="<?= $editId ?>">
+                <div class="form-group">
+                    <label class="form-label">Anno</label>
+                    <select name="anno" id="modalAnno" class="input-arena" required>
+                        <?php for ($i = 1; $i <= 5; $i++): ?>
+                        <option value="<?= $i ?>"><?= $i ?>° anno</option>
+                        <?php endfor; ?>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Sezione</label>
+                        <select name="sezione" id="modalSezione" class="input-arena" required>
+                            <?php foreach ($sezioni as $s): ?>
+                            <option value="<?= $s ?>"><?= $s ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Indirizzo</label>
+                        <select name="indirizzo" id="modalIndirizzo" class="input-arena" required>
+                            <?php foreach ($indirizzi as $ind): ?>
+                            <option value="<?= $ind ?>"><?= $ind ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn-primary-lg">Salva modifiche</button>
+                    <button type="button" class="btn-ghost" id="modalCancel">Annulla</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    var overlay  = document.getElementById('editModal');
+    var badge    = document.getElementById('modalBadge');
+    var editId   = document.getElementById('modalEditId');
+    var selAnno  = document.getElementById('modalAnno');
+    var selSez   = document.getElementById('modalSezione');
+    var selInd   = document.getElementById('modalIndirizzo');
+
+    function openModal(id, anno, sezione, indirizzo) {
+        editId.value = id;
+        badge.textContent = anno + sezione + ' ' + indirizzo;
+        for (var o of selAnno.options)    o.selected = (o.value == anno);
+        for (var o of selSez.options)     o.selected = (o.value === sezione);
+        for (var o of selInd.options)     o.selected = (o.value === indirizzo);
+        overlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        var row = document.querySelector('[data-id="' + id + '"]');
+        if (row) row.closest('tr').classList.add('row-editing');
+    }
+
+    function closeModal() {
+        overlay.style.display = 'none';
+        document.body.style.overflow = '';
+        document.querySelectorAll('tr.row-editing').forEach(function(r) { r.classList.remove('row-editing'); });
+    }
+
+    document.querySelectorAll('.btn-edit-classe').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            openModal(btn.dataset.id, btn.dataset.anno, btn.dataset.sezione, btn.dataset.indirizzo);
+        });
+    });
+
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    document.getElementById('modalCancel').addEventListener('click', closeModal);
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+
+    <?php if ($editId > 0 && $editClasse): ?>
+    openModal(
+        <?= $editId ?>,
+        <?= json_encode((string)$editClasse['anno']) ?>,
+        <?= json_encode($editClasse['sezione']) ?>,
+        <?= json_encode(!empty($errors) ? ($_POST['indirizzo'] ?? $editClasse['indirizzo']) : $editClasse['indirizzo']) ?>
+    );
+    <?php endif; ?>
+})();
+</script>
 <script src="/CodeRush/js/script.js"></script>
 </body>
 </html>

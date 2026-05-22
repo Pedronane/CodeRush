@@ -204,3 +204,178 @@ input[type="range"]::-moz-range-thumb {
         grid-template-columns: 1fr !important;
     }
 }
+
+/* ── Consegna Picker ─────────────────────────────────────── */
+
+.cpicker {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--card);
+}
+
+.cpicker-selected {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 42px;
+    background: rgba(255,255,255,.03);
+    flex-wrap: wrap;
+}
+
+.cpicker-placeholder {
+    color: var(--muted-foreground);
+    font-size: 13px;
+}
+
+.cpicker-sel-name {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--foreground);
+}
+
+.cpicker-sel-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cpicker-search-wrap {
+    position: relative;
+    border-bottom: 1px solid var(--border);
+}
+
+.cpicker-search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted-foreground);
+    font-size: 16px;
+    pointer-events: none;
+}
+
+.cpicker-search {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 9px 14px 9px 34px;
+    font-size: 13px;
+    color: var(--foreground);
+    box-sizing: border-box;
+}
+
+.cpicker-search::placeholder {
+    color: var(--muted-foreground);
+}
+
+.cpicker-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(0,0,0,.12);
+}
+
+.cpicker-pill {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted-foreground);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+    white-space: nowrap;
+}
+
+.cpicker-pill:hover {
+    border-color: var(--brand-blue);
+    color: var(--brand-blue);
+}
+
+.cpicker-pill.active {
+    background: rgba(74,143,212,.18);
+    border-color: var(--brand-blue);
+    color: var(--brand-blue);
+}
+
+.cpicker-list {
+    max-height: 280px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+}
+
+.cpicker-item {
+    padding: 9px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,.04);
+    transition: background .12s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.cpicker-item:last-child {
+    border-bottom: none;
+}
+
+.cpicker-item:hover {
+    background: rgba(255,255,255,.05);
+}
+
+.cpicker-item.selected {
+    background: rgba(61,181,64,.1);
+    border-left: 3px solid var(--brand-green);
+    padding-left: 11px;
+}
+
+.cpicker-item-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--foreground);
+    flex: 1;
+}
+
+.cpicker-item.selected .cpicker-item-name {
+    color: #fff;
+    font-weight: 600;
+}
+
+.cpicker-item-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.cpicker-lang {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.cpicker-lang[data-lname="Python"]    { background: rgba(74,143,212,.2);  color: #60a5fa; }
+.cpicker-lang[data-lname="JavaScript"]{ background: rgba(247,148,29,.2);  color: #F7941D; }
+.cpicker-lang[data-lname="Java"]      { background: rgba(248,81,73,.15);  color: #f87171; }
+.cpicker-lang[data-lname="C"]         { background: rgba(154,163,176,.15);color: #9ca3b0; }
+.cpicker-lang[data-lname="C++"]       { background: rgba(74,143,212,.2);  color: #7dd3fc; }
+.cpicker-lang[data-lname="PHP"]       { background: rgba(167,139,250,.2); color: #a78bfa; }
+.cpicker-lang[data-lname="SQL"]       { background: rgba(45,212,191,.15); color: #2dd4bf; }
+.cpicker-lang[data-lname="HTML/CSS"]  { background: rgba(247,148,29,.2);  color: #fb923c; }
+
+.cpicker-empty {
+    padding: 20px;
+    text-align: center;
+    color: var(--muted-foreground);
+    font-size: 13px;
+}

@@ -23,6 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$classe || !$domanda) {
             $errors[] = 'Classe o consegna non valida.';
         } else {
+            // Codice univoco con cui gli studenti entreranno nella lobby
             $codice = generateAccessCode();
             $db->prepare(
                 'INSERT INTO partite (host_id,classe_id,domanda_id,tempo_lettura,tempo_turno,codice_accesso)
@@ -89,14 +90,44 @@ require_once __DIR__ . '/../includes/header.php';
 
                 <div class="form-group">
                     <label class="form-label">Consegna</label>
-                    <select name="domanda_id" id="selectDomanda" class="input-arena" required>
-                        <option value="0">— Seleziona consegna —</option>
-                        <?php foreach ($domande as $d): ?>
-                        <option value="<?= $d['id'] ?>">
-                            <?= sanitize($d['nome']) ?> — <?= sanitize($d['linguaggio_nome']) ?>
-                        </option>
-                        <?php endforeach; ?>
-                    </select>
+                    <input type="hidden" name="domanda_id" id="domanda_id" value="0">
+
+                    <div class="cpicker">
+                        <div class="cpicker-selected" id="cpickerSelected">
+                            <span class="cpicker-placeholder">— Seleziona una consegna —</span>
+                        </div>
+                        <div class="cpicker-search-wrap">
+                            <span class="cpicker-search-icon">⌕</span>
+                            <input type="text" id="cpickerSearch" class="cpicker-search" placeholder="Cerca per nome...">
+                        </div>
+                        <div class="cpicker-filters" id="cpickerFilters">
+                            <button type="button" class="cpicker-pill active" data-lang="0">Tutti</button>
+                            <?php
+                            $lingMap = [];
+                            foreach ($domande as $d) $lingMap[$d['linguaggio_id']] = $d['linguaggio_nome'];
+                            foreach ($lingMap as $lid => $lnome): ?>
+                            <button type="button" class="cpicker-pill" data-lang="<?= $lid ?>"><?= sanitize($lnome) ?></button>
+                            <?php endforeach; ?>
+                        </div>
+                        <div class="cpicker-list" id="cpickerList">
+                            <?php foreach ($domande as $d):
+                                $diff = $d['difficolta'] === null ? '' : ($d['difficolta'] == 0 ? 'Facile' : 'Difficile');
+                                $diffCls = $d['difficolta'] === null ? '' : ($d['difficolta'] == 0 ? 'badge-facile' : 'badge-difficile');
+                            ?>
+                            <div class="cpicker-item"
+                                 data-id="<?= $d['id'] ?>"
+                                 data-lang="<?= $d['linguaggio_id'] ?>"
+                                 data-nome="<?= strtolower(htmlspecialchars($d['nome'], ENT_QUOTES)) ?>">
+                                <div class="cpicker-item-name"><?= sanitize($d['nome']) ?></div>
+                                <div class="cpicker-item-meta">
+                                    <span class="cpicker-lang" data-lname="<?= sanitize($d['linguaggio_nome']) ?>"><?= sanitize($d['linguaggio_nome']) ?></span>
+                                    <?php if ($diff): ?><span class="badge <?= $diffCls ?>" style="font-size:10px;padding:2px 7px;"><?= $diff ?></span><?php endif; ?>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                            <div class="cpicker-empty" id="cpickerEmpty" style="display:none;">Nessuna consegna trovata.</div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Tempo lettura slider -->
@@ -175,16 +206,56 @@ document.addEventListener('DOMContentLoaded', function() {
         var v = parseInt(this.value);
         document.getElementById('turno-val').textContent = v >= 60 ? Math.floor(v/60)+'m'+((v%60)?' '+v%60+'s':'') : v+'s';
     });
-    var selD = document.getElementById('selectDomanda');
-    var card = document.getElementById('previewCard');
-    var prev = document.getElementById('previewDomanda');
-    if (selD && card && prev) {
-        selD.addEventListener('change', function() {
-            var d = domande.find(function(x){ return x.id == selD.value; });
-            if (d) { prev.textContent = d.testo; card.style.display = 'block'; }
-            else   { card.style.display = 'none'; }
+
+    var hidden   = document.getElementById('domanda_id');
+    var search   = document.getElementById('cpickerSearch');
+    var pills    = document.querySelectorAll('.cpicker-pill');
+    var items    = document.querySelectorAll('.cpicker-item');
+    var selDisp  = document.getElementById('cpickerSelected');
+    var empty    = document.getElementById('cpickerEmpty');
+    var card     = document.getElementById('previewCard');
+    var prev     = document.getElementById('previewDomanda');
+    var activeLang = '0';
+
+    function applyFilter() {
+        var q = search.value.toLowerCase().trim();
+        var visible = 0;
+        items.forEach(function(item) {
+            var matchQ = item.dataset.nome.includes(q);
+            var matchL = activeLang === '0' || item.dataset.lang === activeLang;
+            var show = matchQ && matchL;
+            item.style.display = show ? '' : 'none';
+            if (show) visible++;
         });
+        empty.style.display = visible === 0 ? '' : 'none';
     }
+
+    search.addEventListener('input', applyFilter);
+
+    pills.forEach(function(pill) {
+        pill.addEventListener('click', function() {
+            pills.forEach(function(p) { p.classList.remove('active'); });
+            pill.classList.add('active');
+            activeLang = pill.dataset.lang;
+            applyFilter();
+        });
+    });
+
+    items.forEach(function(item) {
+        item.addEventListener('click', function() {
+            items.forEach(function(i) { i.classList.remove('selected'); });
+            item.classList.add('selected');
+            hidden.value = item.dataset.id;
+
+            var nameTxt = item.querySelector('.cpicker-item-name').textContent;
+            var metaHTML = item.querySelector('.cpicker-item-meta').innerHTML;
+            selDisp.innerHTML = '<span class="cpicker-sel-name">' + nameTxt + '</span>'
+                              + '<span class="cpicker-sel-meta">' + metaHTML + '</span>';
+
+            var d = domande.find(function(x){ return x.id == item.dataset.id; });
+            if (d && card && prev) { prev.textContent = d.testo; card.style.display = 'block'; }
+        });
+    });
 });
 </script>
 <script src="/CodeRush/js/script.js"></script>
