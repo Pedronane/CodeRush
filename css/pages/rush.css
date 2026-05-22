@@ -205,6 +205,81 @@ input[type="range"]::-moz-range-thumb {
     }
 }
 
+/* ── Classe Card Picker ──────────────────────────────────── */
+
+.cl-picker {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.cl-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s, box-shadow .15s;
+    outline: none;
+    text-align: center;
+}
+
+.cl-card:hover {
+    border-color: rgba(74,143,212,.4);
+    background: rgba(74,143,212,.05);
+}
+
+.cl-card:focus-visible {
+    border-color: var(--brand-blue);
+    box-shadow: 0 0 0 2px rgba(74,143,212,.3);
+}
+
+.cl-card.selected {
+    border-color: var(--brand-green);
+    background: rgba(61,181,64,.1);
+    box-shadow: 0 0 0 1px var(--brand-green);
+}
+
+.cl-card-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--brand-blue);
+    line-height: 1;
+    margin-bottom: 4px;
+    transition: color .15s;
+}
+
+.cl-card.selected .cl-card-code {
+    color: var(--brand-green);
+}
+
+.cl-card-ind {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted-foreground);
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cl-card-count {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted-foreground);
+    background: rgba(255,255,255,.06);
+    border-radius: 20px;
+    padding: 2px 8px;
+    display: inline-block;
+}
+
+.cl-card.selected .cl-card-count {
+    background: rgba(61,181,64,.15);
+    color: var(--brand-green);
+}
+
 /* ── Consegna Picker ─────────────────────────────────────── */
 
 .cpicker {

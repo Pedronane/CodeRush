@@ -38,6 +38,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $classi  = getAllClassi();
 $domande = getDomandeByHost($_SESSION['user_id']);
 
+// Conteggio studenti per classe (una sola query)
+$scRows = $db->query('SELECT classe_id, COUNT(*) AS n FROM studente_classe GROUP BY classe_id')->fetchAll();
+$scMap  = array_column($scRows, 'n', 'classe_id');
+foreach ($classi as &$cl) $cl['n_studenti'] = (int)($scMap[$cl['id']] ?? 0);
+unset($cl);
+
 $pageTitle = 'Nuovo Rush';
 require_once __DIR__ . '/../includes/header.php';
 ?>
@@ -78,14 +84,16 @@ require_once __DIR__ . '/../includes/header.php';
 
                 <div class="form-group">
                     <label class="form-label">Classe</label>
-                    <select name="classe_id" id="selectClasse" class="input-arena" required>
-                        <option value="0">— Seleziona classe —</option>
+                    <input type="hidden" name="classe_id" id="classe_id" value="0">
+                    <div class="cl-picker" id="clPicker">
                         <?php foreach ($classi as $cl): ?>
-                        <option value="<?= $cl['id'] ?>">
-                            <?= sanitize($cl['anno'].$cl['sezione'].' '.$cl['indirizzo']) ?>
-                        </option>
+                        <div class="cl-card" data-id="<?= $cl['id'] ?>" tabindex="0">
+                            <div class="cl-card-code"><?= $cl['anno'].$cl['sezione'] ?></div>
+                            <div class="cl-card-ind"><?= sanitize($cl['indirizzo']) ?></div>
+                            <div class="cl-card-count"><?= $cl['n_studenti'] ?> student<?= $cl['n_studenti'] != 1 ? 'i' : 'e' ?></div>
+                        </div>
                         <?php endforeach; ?>
-                    </select>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -205,6 +213,18 @@ document.addEventListener('DOMContentLoaded', function() {
     if (selT) selT.addEventListener('input', function() {
         var v = parseInt(this.value);
         document.getElementById('turno-val').textContent = v >= 60 ? Math.floor(v/60)+'m'+((v%60)?' '+v%60+'s':'') : v+'s';
+    });
+
+    // Classe card picker
+    var classeHidden = document.getElementById('classe_id');
+    document.querySelectorAll('.cl-card').forEach(function(card) {
+        function select() {
+            document.querySelectorAll('.cl-card').forEach(function(c) { c.classList.remove('selected'); });
+            card.classList.add('selected');
+            classeHidden.value = card.dataset.id;
+        }
+        card.addEventListener('click', select);
+        card.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(); } });
     });
 
     var hidden   = document.getElementById('domanda_id');

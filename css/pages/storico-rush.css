@@ -34,64 +34,110 @@
     color: var(--muted-foreground);
 }
 
-/* ── Filter panel ───────────────────────────────────────── */
+/* ── Filter panel (pill style) ──────────────────────────── */
 
-.sr-filters {
+.sf-panel {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 14px;
-    padding: 18px 20px;
+    padding: 16px 20px;
     margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
     animation: fade-up 0.4s ease-out 0.1s both;
 }
 
-.sr-filters-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr auto;
-    gap: 10px;
-    align-items: end;
-}
-
-.sr-filter-group {
+.sf-row {
     display: flex;
-    flex-direction: column;
-    gap: 5px;
+    align-items: flex-start;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
-.sr-filter-label {
+.sf-row-studente {
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+}
+
+.sf-label {
     font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: .07em;
     color: var(--muted-foreground);
+    padding-top: 5px;
+    white-space: nowrap;
+    min-width: 70px;
 }
 
-.sr-filter-group .input-arena {
-    margin-bottom: 0;
+.sf-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
 }
 
-.sr-filter-group .input-arena:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-.sr-reset {
+.sf-pill {
     background: transparent;
     border: 1px solid var(--border);
     color: var(--muted-foreground);
-    border-radius: 10px;
-    padding: 9px 14px;
+    border-radius: 20px;
+    padding: 4px 12px;
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
     transition: all .15s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
     white-space: nowrap;
-    align-self: end;
 }
 
-.sr-reset:hover {
-    border-color: var(--brand-danger, #e84343);
-    color: var(--brand-danger, #e84343);
+.sf-pill:hover {
+    border-color: rgba(255,255,255,.25);
+    color: var(--foreground);
+}
+
+.sf-pill-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 900;
+}
+
+.sf-pill-sub {
+    font-weight: 500;
+    font-size: 11px;
+    opacity: .8;
+}
+
+/* Active colors per tipo */
+.sf-pill-classe.active  { background: rgba(74,143,212,.18);  border-color: var(--brand-blue);   color: var(--brand-blue); }
+.sf-pill-domanda.active { background: rgba(247,148,29,.18);  border-color: var(--brand-orange);  color: var(--brand-orange); }
+.sf-pill-studente.active{ background: rgba(61,181,64,.18);   border-color: var(--brand-green);   color: var(--brand-green); }
+
+.sf-footer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-top: 4px;
+}
+
+.sf-reset {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted-foreground);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+    margin-left: auto;
+}
+
+.sf-reset:hover {
+    border-color: #e84343;
+    color: #e84343;
 }
 
 .sr-active-badge {
@@ -99,10 +145,9 @@
     background: rgba(74,143,212,.15);
     color: var(--brand-blue);
     border-radius: 20px;
-    padding: 2px 10px;
+    padding: 3px 10px;
     font-weight: 700;
     display: none;
-    margin-top: 10px;
 }
 
 /* ── Rush list ──────────────────────────────────────────── */

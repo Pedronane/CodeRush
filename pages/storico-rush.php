@@ -13,6 +13,10 @@ $domandeSet = array_unique(array_column($rushes, 'domanda_id'));
 $classi  = getAllClassi();
 $domande = getDomandeByHost($_SESSION['user_id']);
 
+// Solo classi/consegne che appaiono nei rush (per pill filter)
+$classiInRush  = array_filter($classi,  fn($c) => in_array($c['id'], $classiSet));
+$domandeInRush = array_filter($domande, fn($d) => in_array($d['id'], $domandeSet));
+
 // Studenti per classe → JSON per cascading JS
 $stmtSC = $db->query(
     'SELECT u.id, u.nome, u.cognome, sc.classe_id
@@ -79,35 +83,43 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <!-- Filters -->
-    <div class="sr-filters">
-        <div class="sr-filters-grid">
-            <div class="sr-filter-group">
-                <label class="sr-filter-label">Classe</label>
-                <select id="fClasse" class="input-arena">
-                    <option value="">Tutte le classi</option>
-                    <?php foreach ($classi as $cl): ?>
-                    <option value="<?= $cl['id'] ?>"><?= sanitize($cl['anno'].$cl['sezione'].' '.$cl['indirizzo']) ?></option>
-                    <?php endforeach; ?>
-                </select>
+    <div class="sf-panel">
+
+        <div class="sf-row">
+            <span class="sf-label">Classe</span>
+            <div class="sf-pills">
+                <button class="sf-pill sf-pill-classe active" data-filter="classe" data-val="">Tutte</button>
+                <?php foreach ($classiInRush as $cl): ?>
+                <button class="sf-pill sf-pill-classe" data-filter="classe" data-val="<?= $cl['id'] ?>"
+                        data-nome="<?= sanitize($cl['anno'].$cl['sezione'].' '.$cl['indirizzo']) ?>">
+                    <span class="sf-pill-code"><?= $cl['anno'].$cl['sezione'] ?></span>
+                    <span class="sf-pill-sub"><?= sanitize($cl['indirizzo']) ?></span>
+                </button>
+                <?php endforeach; ?>
             </div>
-            <div class="sr-filter-group">
-                <label class="sr-filter-label">Consegna</label>
-                <select id="fDomanda" class="input-arena">
-                    <option value="">Tutte le consegne</option>
-                    <?php foreach ($domande as $d): ?>
-                    <option value="<?= $d['id'] ?>"><?= sanitize($d['nome']) ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div class="sr-filter-group">
-                <label class="sr-filter-label">Studente</label>
-                <select id="fStudente" class="input-arena" disabled>
-                    <option value="">— seleziona prima una classe —</option>
-                </select>
-            </div>
-            <button type="button" id="srReset" class="sr-reset">✕ Reset</button>
         </div>
-        <div class="sr-active-badge" id="srActiveBadge"></div>
+
+        <div class="sf-row">
+            <span class="sf-label">Consegna</span>
+            <div class="sf-pills">
+                <button class="sf-pill sf-pill-domanda active" data-filter="domanda" data-val="">Tutte</button>
+                <?php foreach ($domandeInRush as $d): ?>
+                <button class="sf-pill sf-pill-domanda" data-filter="domanda" data-val="<?= $d['id'] ?>">
+                    <?= sanitize($d['nome']) ?>
+                </button>
+                <?php endforeach; ?>
+            </div>
+        </div>
+
+        <div class="sf-row sf-row-studente" id="sfStudenteRow">
+            <span class="sf-label" id="sfStudenteLabel">Studente</span>
+            <div class="sf-pills" id="sfStudentePills"></div>
+        </div>
+
+        <div class="sf-footer">
+            <div class="sr-active-badge" id="srActiveBadge"></div>
+            <button type="button" id="srReset" class="sf-reset">✕ Azzera filtri</button>
+        </div>
     </div>
 
     <!-- Rush list -->
@@ -149,73 +161,110 @@ require_once __DIR__ . '/../includes/header.php';
 <script>
 (function () {
     var studentiPerClasse = <?= json_encode($studentiPerClasse) ?>;
-    var cards      = document.querySelectorAll('.sr-card');
-    var fClasse    = document.getElementById('fClasse');
-    var fDomanda   = document.getElementById('fDomanda');
-    var fStudente  = document.getElementById('fStudente');
-    var srReset    = document.getElementById('srReset');
-    var noResults  = document.getElementById('srNoResults');
-    var statVis    = document.getElementById('statVisible');
-    var activeBadge= document.getElementById('srActiveBadge');
+    var cards         = document.querySelectorAll('.sr-card');
+    var noResults     = document.getElementById('srNoResults');
+    var statVis       = document.getElementById('statVisible');
+    var activeBadge   = document.getElementById('srActiveBadge');
+    var studenteRow   = document.getElementById('sfStudenteRow');
+    var studenteLabel = document.getElementById('sfStudenteLabel');
+    var studentePills = document.getElementById('sfStudentePills');
+    var srReset       = document.getElementById('srReset');
 
-    function updateStudentSelect(classeId) {
-        fStudente.innerHTML = '';
-        if (!classeId) {
-            fStudente.disabled = true;
-            fStudente.innerHTML = '<option value="">— seleziona prima una classe —</option>';
-            return;
-        }
-        var studenti = studentiPerClasse[classeId] || [];
-        var opt = document.createElement('option');
-        opt.value = ''; opt.textContent = 'Tutti gli studenti';
-        fStudente.appendChild(opt);
-        studenti.forEach(function (s) {
-            var o = document.createElement('option');
-            o.value = s.id;
-            o.textContent = s.cognome + ' ' + s.nome;
-            fStudente.appendChild(o);
-        });
-        fStudente.disabled = studenti.length === 0;
-    }
+    var activeClasse  = '';
+    var activeDomanda = '';
+    var activeStudente = '';
 
     function applyFilters() {
-        var cId = fClasse.value;
-        var dId = fDomanda.value;
-        var sId = fStudente.value;
         var visible = 0;
-
         cards.forEach(function (card) {
-            var matchC = !cId || card.dataset.classe === cId;
-            var matchD = !dId || card.dataset.domanda === dId;
-            var matchS = !sId || (',' + card.dataset.studenti + ',').indexOf(',' + sId + ',') !== -1;
+            var matchC = !activeClasse   || card.dataset.classe   === activeClasse;
+            var matchD = !activeDomanda  || card.dataset.domanda  === activeDomanda;
+            var matchS = !activeStudente || (',' + card.dataset.studenti + ',').indexOf(',' + activeStudente + ',') !== -1;
             var show   = matchC && matchD && matchS;
             card.style.display = show ? '' : 'none';
             if (show) visible++;
         });
-
-        if (noResults)  noResults.style.display  = visible === 0 ? 'block' : 'none';
-        if (statVis)    statVis.textContent = visible;
-
-        var active = [cId, dId, sId].filter(Boolean).length;
+        if (noResults) noResults.style.display = visible === 0 ? 'block' : 'none';
+        if (statVis)   statVis.textContent = visible;
+        var n = [activeClasse, activeDomanda, activeStudente].filter(Boolean).length;
         if (activeBadge) {
-            activeBadge.textContent = active > 0 ? active + (active === 1 ? ' filtro attivo' : ' filtri attivi') : '';
-            activeBadge.style.display = active > 0 ? 'inline-block' : 'none';
+            activeBadge.textContent  = n > 0 ? n + (n === 1 ? ' filtro attivo' : ' filtri attivi') : '';
+            activeBadge.style.display = n > 0 ? 'inline-block' : 'none';
         }
     }
 
-    fClasse.addEventListener('change', function () {
-        fStudente.value = '';
-        updateStudentSelect(fClasse.value);
-        applyFilters();
+    function buildStudentePills(classeId, classeNome) {
+        studentePills.innerHTML = '';
+        var studenti = studentiPerClasse[classeId] || [];
+
+        var all = document.createElement('button');
+        all.type = 'button';
+        all.className = 'sf-pill sf-pill-studente active';
+        all.dataset.val = '';
+        all.textContent = 'Tutti';
+        all.addEventListener('click', function () {
+            document.querySelectorAll('.sf-pill-studente').forEach(function(p){ p.classList.remove('active'); });
+            all.classList.add('active');
+            activeStudente = '';
+            applyFilters();
+        });
+        studentePills.appendChild(all);
+
+        studenti.forEach(function (s) {
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'sf-pill sf-pill-studente';
+            btn.dataset.val = s.id;
+            btn.textContent = s.cognome + ' ' + s.nome;
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.sf-pill-studente').forEach(function(p){ p.classList.remove('active'); });
+                btn.classList.add('active');
+                activeStudente = String(s.id);
+                applyFilters();
+            });
+            studentePills.appendChild(btn);
+        });
+
+        studenteLabel.textContent = 'Studente — ' + classeNome;
+        studenteRow.style.display = '';
+    }
+
+    // Classe pills
+    document.querySelectorAll('.sf-pill-classe').forEach(function (pill) {
+        pill.addEventListener('click', function () {
+            document.querySelectorAll('.sf-pill-classe').forEach(function(p){ p.classList.remove('active'); });
+            pill.classList.add('active');
+            activeClasse   = pill.dataset.val;
+            activeStudente = '';
+
+            if (activeClasse) {
+                buildStudentePills(activeClasse, pill.dataset.nome || '');
+            } else {
+                studenteRow.style.display = 'none';
+                studentePills.innerHTML   = '';
+            }
+            applyFilters();
+        });
     });
 
-    fDomanda.addEventListener('change', applyFilters);
-    fStudente.addEventListener('change', applyFilters);
+    // Consegna pills
+    document.querySelectorAll('.sf-pill-domanda').forEach(function (pill) {
+        pill.addEventListener('click', function () {
+            document.querySelectorAll('.sf-pill-domanda').forEach(function(p){ p.classList.remove('active'); });
+            pill.classList.add('active');
+            activeDomanda = pill.dataset.val;
+            applyFilters();
+        });
+    });
 
+    // Reset
     srReset.addEventListener('click', function () {
-        fClasse.value   = '';
-        fDomanda.value  = '';
-        updateStudentSelect('');
+        activeClasse = activeDomanda = activeStudente = '';
+        document.querySelectorAll('.sf-pill').forEach(function(p){ p.classList.remove('active'); });
+        document.querySelector('.sf-pill-classe').classList.add('active');
+        document.querySelector('.sf-pill-domanda').classList.add('active');
+        studenteRow.style.display = 'none';
+        studentePills.innerHTML   = '';
         applyFilters();
     });
 })();
