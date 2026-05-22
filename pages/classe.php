@@ -11,6 +11,7 @@ if (!$classe) { header('Location: /CodeRush/pages/classi.php'); exit(); }
 $errors  = [];
 $success = '';
 
+// Tre azioni sulla stessa pagina, distinte dal campo nascosto "action"
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
@@ -53,6 +54,7 @@ $tuttiStudenti     = $db->query('SELECT * FROM users WHERE ruolo="studente" ORDE
 $stmtInClasse      = $db->prepare('SELECT studente_id FROM studente_classe WHERE classe_id=?');
 $stmtInClasse->execute([$classe_id]);
 $idInClasse        = array_column($stmtInClasse->fetchAll(), 'studente_id');
+// Studenti selezionabili: quelli non ancora iscritti a questa classe
 $studentiDisponibili = array_filter($tuttiStudenti, fn($s) => !in_array($s['id'], $idInClasse));
 $altreClassi       = array_filter(getAllClassi(), fn($c) => $c['id'] != $classe_id);
 $rushes            = getRushByClasse($classe_id);
@@ -199,8 +201,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <td class="rush-table-host"><?= sanitize($r['host_nome'].' '.$r['host_cognome']) ?></td>
                 <td>
                     <div class="rush-table-actions">
-                        <a href="/CodeRush/pages/risultati.php?id=<?= $r['id'] ?>" class="btn btn-sm btn-outline">Risultati</a>
-                        <a href="/CodeRush/pages/rush-detail.php?id=<?= $r['id'] ?>" class="btn btn-sm btn-primary">Analisi</a>
+                        <a href="/CodeRush/pages/risultati.php?id=<?= $r['id'] ?>" class="btn btn-sm btn-primary">Risultati →</a>
                     </div>
                 </td>
             </tr>

@@ -147,8 +147,7 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
             </div>
             <div class="sr-card-right">
-                <a href="/CodeRush/pages/risultati.php?id=<?= $r['id'] ?>"   class="btn btn-sm btn-outline">Risultati</a>
-                <a href="/CodeRush/pages/rush-detail.php?id=<?= $r['id'] ?>" class="btn btn-sm btn-primary">Analisi →</a>
+                <a href="/CodeRush/pages/risultati.php?id=<?= $r['id'] ?>" class="btn btn-sm btn-primary">Risultati →</a>
             </div>
         </div>
         <?php endforeach; ?>

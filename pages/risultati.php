@@ -46,11 +46,13 @@ function escHtml(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt
             </p>
         </div>
         <div class="action-row">
-            <?php if (isHost()): ?>
-            <a href="/CodeRush/pages/rush-detail.php?id=<?= $partita_id ?>" class="btn-primary-lg">Analisi completa →</a>
-            <?php endif; ?>
             <a href="/CodeRush/" class="btn-ghost">← Home</a>
         </div>
+    </div>
+
+    <div class="card assignment-card page-section-assignment">
+        <p class="assignment-label">Consegna originale</p>
+        <p class="assignment-content"><?= sanitize($partita['domanda_testo']) ?></p>
     </div>
 
     <?php
@@ -166,8 +168,7 @@ function escHtml(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt
     <div class="results-actions">
         <a href="/CodeRush/" class="btn-ghost">← Home</a>
         <?php if (isHost()): ?>
-        <a href="/CodeRush/pages/rush-detail.php?id=<?= $partita_id ?>" class="btn-primary-lg">Analisi completa →</a>
-        <a href="/CodeRush/pages/classe.php?id=<?= $partita['classe_id'] ?>" class="btn-ghost">Torna alla classe</a>
+        <a href="/CodeRush/pages/classe.php?id=<?= $partita['classe_id'] ?>" class="btn-ghost">← Torna alla classe</a>
         <?php endif; ?>
     </div>
 </main>
