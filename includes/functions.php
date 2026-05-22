@@ -212,9 +212,10 @@ function getPartiteByStudente($studente_id) {
     $db = getDB();
     $stmt = $db->prepare(
         'SELECT p.*, par.id AS slot_id, d.nome AS domanda_nome, l.nome AS linguaggio_nome,
+                l.id AS linguaggio_id,
                 c.anno, c.sezione, c.indirizzo,
                 u.nome AS host_nome, u.cognome AS host_cognome,
-                v.voto
+                v.voto, v.voto_host
          FROM partite p
          JOIN partecipazioni par ON par.partita_id = p.id AND par.studente_id = ?
          JOIN domande d ON d.id = p.domanda_id
@@ -227,6 +228,12 @@ function getPartiteByStudente($studente_id) {
     );
     $stmt->execute([$studente_id]);
     return $stmt->fetchAll();
+}
+
+function saveVotoHost($slot_id, $voto) {
+    $db = getDB();
+    $db->prepare('UPDATE valutazioni SET voto_host = ? WHERE slot_id = ?')
+       ->execute([$voto, $slot_id]);
 }
 
 function getRushesStorico($host_id) {

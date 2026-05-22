@@ -1,4 +1,5 @@
 <?php
+// Endpoint JSON unico: il front-end fa polling qui per stato lobby/partita
 session_start();
 require_once __DIR__ . '/../includes/functions.php';
 
@@ -33,6 +34,8 @@ function handleAction($action, $input) {
             $result = handleSubmitCode($input);
         } elseif ($action === 'advance_phase') {
             $result = handleAdvancePhase($input);
+        } elseif ($action === 'save_voto_host') {
+            $result = handleSaveVotoHost($input);
         } else {
             $result = ['error' => 'Azione non valida', 'success' => false];
         }
@@ -80,6 +83,7 @@ function handleGameState() {
                 && !empty($partita['fase_inizio'])
                 && getTempoRimanente($partita) <= 0;
 
+            // Timer "lazy": non c'è uno scheduler, è il polling a far avanzare la fase scaduta
             if ($tempoScaduto) {
                 $nuovoStato = advanceGamePhase($partita);
                 $partita = getPartitaById($id);
@@ -148,6 +152,7 @@ function handleSubmitCode($input) {
                     'UPDATE turni SET codice = ?, submitted_at = NOW() WHERE id = ?'
                 )->execute([$codice, $turno['id']]);
 
+                // Se tutti hanno già consegnato si avanza subito, senza aspettare il timer
                 $gameEnded = false;
                 if (allSubmitted($partita_id, $partita['round_corrente'])) {
                     $nuovoStato = advanceGamePhase($partita);
@@ -160,6 +165,15 @@ function handleSubmitCode($input) {
         }
     }
     return $result;
+}
+
+function handleSaveVotoHost($input) {
+    if (!isHost()) return ['error' => 'Solo host', 'success' => false];
+    $slot_id = (int)($input['slot_id'] ?? 0);
+    $voto    = (int)($input['voto'] ?? 0);
+    if ($slot_id <= 0 || $voto < 1 || $voto > 10) return ['error' => 'Parametri non validi', 'success' => false];
+    saveVotoHost($slot_id, $voto);
+    return ['success' => true];
 }
 
 function handleAdvancePhase($input) {

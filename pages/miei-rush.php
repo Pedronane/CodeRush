@@ -5,10 +5,9 @@ if (!isLoggedIn() || !isStudent()) { header('Location: /CodeRush/login.php'); ex
 
 $rush   = getPartiteByStudente($_SESSION['user_id']);
 $nTot   = count($rush);
-$nCorr  = count(array_filter($rush, fn($r) => $r['voto'] === 'corretto'));
-$nParz  = count(array_filter($rush, fn($r) => $r['voto'] === 'parziale'));
-$nSbag  = count(array_filter($rush, fn($r) => $r['voto'] === 'sbagliato'));
-$nPend  = $nTot - $nCorr - $nParz - $nSbag;
+$nCorr  = count(array_filter($rush, fn($r) => $r['voto_host'] !== null && (int)$r['voto_host'] >= 6));
+$nSbag  = count(array_filter($rush, fn($r) => $r['voto_host'] !== null && (int)$r['voto_host'] < 6));
+$nPend  = $nTot - $nCorr - $nSbag;
 
 $lingueUsate = [];
 foreach ($rush as $r) {
@@ -54,13 +53,13 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="mr-stat-value"><?= $nCorr ?></div>
             <div class="mr-stat-label">Corretti</div>
         </div>
-        <div class="mr-stat mr-stat-parz">
-            <div class="mr-stat-value"><?= $nParz ?></div>
-            <div class="mr-stat-label">Parziali</div>
-        </div>
         <div class="mr-stat mr-stat-ko">
             <div class="mr-stat-value"><?= $nSbag ?></div>
             <div class="mr-stat-label">Sbagliati</div>
+        </div>
+        <div class="mr-stat mr-stat-parz">
+            <div class="mr-stat-value"><?= $nPend ?></div>
+            <div class="mr-stat-label">In valutazione</div>
         </div>
     </div>
 
@@ -68,12 +67,11 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="mr-filters">
         <div class="mr-filter-row">
             <span class="mr-filter-label">Voto</span>
-            <button type="button" class="mr-pill active-all"       data-filter="voto" data-val="">Tutti</button>
-            <button type="button" class="mr-pill"                  data-filter="voto" data-val="corretto">Corretto</button>
-            <button type="button" class="mr-pill"                  data-filter="voto" data-val="parziale">Parziale</button>
-            <button type="button" class="mr-pill"                  data-filter="voto" data-val="sbagliato">Sbagliato</button>
+            <button type="button" class="mr-pill active-all"  data-filter="voto" data-val="">Tutti</button>
+            <button type="button" class="mr-pill"             data-filter="voto" data-val="corretto">Corretto</button>
+            <button type="button" class="mr-pill"             data-filter="voto" data-val="sbagliato">Sbagliato</button>
             <?php if ($nPend > 0): ?>
-            <button type="button" class="mr-pill"                  data-filter="voto" data-val="pending">In valutazione</button>
+            <button type="button" class="mr-pill"             data-filter="voto" data-val="pending">In valutazione</button>
             <?php endif; ?>
         </div>
         <?php if (count($lingueUsate) > 1): ?>
@@ -90,13 +88,20 @@ require_once __DIR__ . '/../includes/header.php';
     <!-- Rush list -->
     <div class="mr-list" id="mrList">
         <?php foreach ($rush as $i => $r):
-            $voto      = $r['voto'] ?? '';
-            $badgeCls  = $voto ? 'badge-'.$voto : 'badge-attesa';
-            $votoLabel = $voto ? ucfirst($voto) : 'In valutazione';
-            $delay     = number_format(min($i, 10) * 0.04, 2);
+            $vh = $r['voto_host'] !== null ? (int)$r['voto_host'] : null;
+            if ($vh !== null) {
+                $cardVoto  = $vh >= 6 ? 'corretto' : 'sbagliato';
+                $badgeCls  = $vh >= 6 ? 'badge-corretto' : 'badge-sbagliato';
+                $votoLabel = $vh . '/10 — ' . ($vh >= 6 ? 'Corretto' : 'Sbagliato');
+            } else {
+                $cardVoto  = '';
+                $badgeCls  = 'badge-attesa';
+                $votoLabel = 'In valutazione';
+            }
+            $delay = number_format(min($i, 10) * 0.04, 2);
         ?>
         <div class="mr-card"
-             data-voto="<?= $voto ?>"
+             data-voto="<?= $cardVoto ?>"
              data-lang="<?= $r['linguaggio_id'] ?>"
              style="animation:fade-up .4s ease-out <?= $delay ?>s both;">
             <div class="mr-card-main">

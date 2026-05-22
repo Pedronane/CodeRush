@@ -75,6 +75,7 @@ function escHtml(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt
         $voto      = $val['voto'] ?? '';
         $votoColor = $votoColors[$voto] ?? 'var(--muted-foreground)';
         $votoBg    = $votoBgs[$voto]    ?? 'rgba(154,163,176,.12)';
+        $votoHost  = $val ? $val['voto_host'] : null;
         $delay     = number_format($i * 0.08, 2);
     ?>
     <div class="chain-card" style="animation:fade-up .5s ease-out <?= $delay ?>s both;">
@@ -86,13 +87,30 @@ function escHtml(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt
                     <div class="chain-label">Catena <?= $i + 1 ?></div>
                 </div>
             </div>
-            <?php if ($val): ?>
-            <span class="chain-status-badge" style="background:<?= $votoBg ?>;color:<?= $votoColor ?>;">
-                <?= ucfirst($voto) ?>
-            </span>
-            <?php else: ?>
-            <span class="badge badge-attesa">In valutazione...</span>
-            <?php endif; ?>
+            <div class="chain-header-right">
+                <?php if (isHost()): ?>
+                <div class="host-grade" id="hg-<?= $part['id'] ?>">
+                    <?php if ($votoHost !== null): ?>
+                    <span class="host-grade-badge <?= $votoHost >= 6 ? 'hgb-ok' : 'hgb-ko' ?>" id="hgb-<?= $part['id'] ?>">
+                        <?= $votoHost ?>/10
+                    </span>
+                    <?php else: ?>
+                    <span class="host-grade-badge" id="hgb-<?= $part['id'] ?>" style="display:none;"></span>
+                    <?php endif; ?>
+                    <input type="number" class="host-grade-input" id="hgi-<?= $part['id'] ?>"
+                           min="1" max="10" value="<?= $votoHost ?? '' ?>" placeholder="—">
+                    <button type="button" class="btn btn-sm btn-primary"
+                            onclick="saveGrade(<?= $part['id'] ?>)">Salva</button>
+                </div>
+                <?php endif; ?>
+                <?php if ($val): ?>
+                <span class="chain-status-badge" style="background:<?= $votoBg ?>;color:<?= $votoColor ?>;">
+                    AI: <?= ucfirst($voto) ?>
+                </span>
+                <?php else: ?>
+                <span class="badge badge-attesa">In valutazione...</span>
+                <?php endif; ?>
+            </div>
         </div>
 
         <?php if ($val && $val['feedback']): ?>
@@ -149,6 +167,27 @@ function escHtml(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt
         <?php endif; ?>
     </div>
 </main>
+<script>
+<?php if (isHost()): ?>
+function saveGrade(slotId) {
+    var inp = document.getElementById('hgi-' + slotId);
+    var val = parseInt(inp.value);
+    if (!val || val < 1 || val > 10) { inp.style.borderColor = 'var(--brand-danger)'; return; }
+    inp.style.borderColor = '';
+    fetch('/CodeRush/api/api.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({action: 'save_voto_host', slot_id: slotId, voto: val})
+    }).then(function(r){ return r.json(); }).then(function(data) {
+        if (!data.success) return;
+        var badge = document.getElementById('hgb-' + slotId);
+        badge.textContent = val + '/10';
+        badge.className = 'host-grade-badge ' + (val >= 6 ? 'hgb-ok' : 'hgb-ko');
+        badge.style.display = '';
+    });
+}
+<?php endif; ?>
+</script>
 <script src="/CodeRush/js/script.js"></script>
 </body>
 </html>

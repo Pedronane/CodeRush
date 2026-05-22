@@ -195,3 +195,50 @@
     color: var(--muted-foreground);
     font-size: 12px;
 }
+
+/* ── Host grading ────────────────────────────────────────── */
+
+.chain-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-left: auto;
+}
+
+.host-grade {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.host-grade-input {
+    width: 58px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 700;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 5px 8px;
+    color: var(--foreground);
+    font-family: 'JetBrains Mono', monospace;
+    transition: border-color .15s;
+}
+
+.host-grade-input:focus { outline: none; border-color: var(--brand-blue); }
+
+.host-grade-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    font-weight: 900;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.hgb-ok { background: rgba(61,181,64,.18);  color: var(--brand-green); }
+.hgb-ko { background: rgba(232,67,67,.18);  color: var(--brand-danger); }
+
+@media (max-width: 600px) {
+    .chain-header-right { margin-left: 0; width: 100%; }
+}
