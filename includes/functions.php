@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/db.php';
 
+/* ── AUTH & SESSIONE ───────────────────────────────────────── */
+
 function isLoggedIn() {
     return isset($_SESSION['user_id']);
 }
@@ -16,6 +18,8 @@ function isStudent() {
 function sanitize($str) {
     return htmlspecialchars(trim((string)$str), ENT_QUOTES, 'UTF-8');
 }
+
+/* ── UTENTI ────────────────────────────────────────────────── */
 
 function loginUser($login_id, $password) {
     $db = getDB();
@@ -37,12 +41,15 @@ function getUserById($id) {
     return $stmt->fetch();
 }
 
+/* ── PARTITE & RUSH ────────────────────────────────────────── */
+
 function generateAccessCode() {
     $db = getDB();
     $code = strtoupper(substr(bin2hex(random_bytes(4)), 0, 6));
     $stmt = $db->prepare('SELECT id FROM partite WHERE codice_accesso = ?');
     $stmt->execute([$code]);
     if ($stmt->fetch()) {
+        // Collisione: rigenera finché il codice non è univoco
         $result = generateAccessCode();
     } else {
         $result = $code;
@@ -169,8 +176,10 @@ function getTurnoCorrente($partita_id, $studente_id, $round) {
     return $stmt->fetch();
 }
 
+// Codice prodotto sullo stesso slot nel round precedente (ciò che lo studente eredita)
 function getPreviousCodice($slot_id, $round) {
     if ($round === 0) {
+        // Primo round: nessun codice ereditato, si parte da zero
         $result = null;
     } else {
         $db = getDB();
@@ -199,6 +208,27 @@ function allSubmitted($partita_id, $round) {
     return (int)$row['cnt'] === 0;
 }
 
+function getPartiteByStudente($studente_id) {
+    $db = getDB();
+    $stmt = $db->prepare(
+        'SELECT p.*, par.id AS slot_id, d.nome AS domanda_nome, l.nome AS linguaggio_nome,
+                c.anno, c.sezione, c.indirizzo,
+                u.nome AS host_nome, u.cognome AS host_cognome,
+                v.voto
+         FROM partite p
+         JOIN partecipazioni par ON par.partita_id = p.id AND par.studente_id = ?
+         JOIN domande d ON d.id = p.domanda_id
+         JOIN linguaggi l ON l.id = d.linguaggio_id
+         JOIN classi c ON c.id = p.classe_id
+         JOIN users u ON u.id = p.host_id
+         LEFT JOIN valutazioni v ON v.slot_id = par.id
+         WHERE p.stato = "finita"
+         ORDER BY p.created_at DESC'
+    );
+    $stmt->execute([$studente_id]);
+    return $stmt->fetchAll();
+}
+
 function getRushByClasse($classe_id) {
     $db = getDB();
     $stmt = $db->prepare(
@@ -213,6 +243,9 @@ function getRushByClasse($classe_id) {
     return $stmt->fetchAll();
 }
 
+/* ── LOGICA DI GIOCO ───────────────────────────────────────── */
+
+// Secondi mancanti alla fine della fase corrente (0 se scaduta)
 function getTempoRimanente($partita) {
     if (empty($partita['fase_inizio'])) {
         $result = 0;
@@ -234,6 +267,9 @@ function getTempoRimanente($partita) {
     return $result;
 }
 
+// Pre-genera tutti i turni della partita: meccanica "telefono senza fili".
+// Ogni round ciascuno studente lavora sullo slot di un compagno diverso,
+// così dopo n round ogni codice è passato per tutte le mani.
 function createTurniForGame($partita_id, $participants) {
     $db = getDB();
     $n = count($participants);
@@ -247,6 +283,7 @@ function createTurniForGame($partita_id, $participants) {
     for ($round = 0; $round < $n; $round++) {
         foreach ($participants as $p) {
             $studentSlot = $p['slot_number'];
+            // Rotazione a ritroso; il doppio modulo evita risultati negativi di %
             $workSlot = (($studentSlot - $round) % $n + $n) % $n;
             $slotId = $slotMap[$workSlot];
             $stmt->execute([$partita_id, $p['studente_id'], $slotId, $round]);
@@ -255,6 +292,7 @@ function createTurniForGame($partita_id, $participants) {
     return true;
 }
 
+// Macchina a stati della partita: lettura → scrittura → (round successivi) → finita
 function advanceGamePhase($partita) {
     $db = getDB();
     $partita_id = $partita['id'];
@@ -267,6 +305,7 @@ function advanceGamePhase($partita) {
         $participants = getPartecipazioniByPartita($partita_id);
         $n = count($participants);
         $nextRound = $partita['round_corrente'] + 1;
+        // Esauriti i round (uno per studente) la partita finisce e parte la valutazione
         if ($nextRound >= $n) {
             $db->prepare(
                 'UPDATE partite SET stato = "finita", fase_inizio = NULL WHERE id = ?'
@@ -285,6 +324,7 @@ function advanceGamePhase($partita) {
     return $result;
 }
 
+// Valuta con l'AI il codice finale di ogni slot a partita conclusa
 function triggerAIEvaluation($partita_id) {
     $db = getDB();
     $partita = getPartitaById($partita_id);
@@ -303,6 +343,7 @@ function triggerAIEvaluation($partita_id) {
                 $lastTurn['codice'],
                 $domanda['nome']
             );
+            // Evita doppie valutazioni se la funzione viene richiamata
             $checkStmt = $db->prepare('SELECT id FROM valutazioni WHERE slot_id = ?');
             $checkStmt->execute([$p['id']]);
             if (!$checkStmt->fetch()) {
@@ -315,9 +356,11 @@ function triggerAIEvaluation($partita_id) {
     return true;
 }
 
+// Chiede a Claude un voto sul codice; ritorna sempre un esito (fallback "parziale")
 function evaluateCode($domanda, $codice, $nomeDomanda) {
     $apiKey = defined('AI_API_KEY') ? AI_API_KEY : '';
     if (empty($apiKey) || empty(trim($codice))) {
+        // Senza chiave o senza codice non si può valutare: esito neutro
         $result = ['voto' => 'parziale', 'feedback' => 'Valutazione automatica non disponibile.'];
     } else {
         $prompt = "Sei un valutatore di codice scolastico. Consegna: \"$nomeDomanda\"\n\nDettaglio: $domanda\n\nCodice finale:\n$codice\n\nRispondi SOLO con JSON: {\"voto\": \"corretto|parziale|sbagliato\", \"feedback\": \"spiegazione breve\"}";

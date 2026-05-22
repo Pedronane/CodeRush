@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="7" fill="#0d1117"/>
+  <text x="16" y="17" font-family="'Courier New',monospace" font-weight="900" font-size="13"
+        dominant-baseline="middle" text-anchor="middle">
+    <tspan fill="#3DB540">&lt;</tspan><tspan fill="#F7941D">/</tspan><tspan fill="#4A8FD4">&gt;</tspan>
+  </text>
+</svg>

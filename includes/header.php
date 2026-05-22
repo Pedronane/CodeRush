@@ -12,6 +12,7 @@ if (isLoggedIn()) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= sanitize($pageTitle) ?> — CodeRush</title>
+    <link rel="icon" type="image/svg+xml" href="<?= BASE_URL ?>/img/favicon.svg">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css">
 </head>
 <body>

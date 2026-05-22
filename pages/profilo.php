@@ -11,6 +11,7 @@ $success = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
+    // Solo gli host modificano i propri dati; gli studenti possono solo cambiare password
     if ($action === 'update_info' && isHost()) {
         $nome    = trim($_POST['nome']    ?? '');
         $cognome = trim($_POST['cognome'] ?? '');
@@ -18,6 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($cognome)) $errors[] = 'Cognome obbligatorio.';
         if (empty($errors)) {
             $db->prepare('UPDATE users SET nome=?,cognome=? WHERE id=?')->execute([$nome,$cognome,$_SESSION['user_id']]);
+            // Allinea la sessione così la navbar mostra subito i dati aggiornati
             $_SESSION['nome']    = $nome;
             $_SESSION['cognome'] = $cognome;
             $user    = getUserById($_SESSION['user_id']);
@@ -170,6 +172,54 @@ require_once __DIR__ . '/../includes/header.php';
 
         </div><!-- end right -->
     </div><!-- end profile-section -->
+
+    <?php if (!$isHost):
+        $miei_rush = getPartiteByStudente($_SESSION['user_id']);
+    ?>
+    <div class="card card-no-pad rush-history-card">
+        <div class="rush-history-header">
+            <span class="rush-history-label">I miei Rush</span>
+            <span class="badge badge-host"><?= count($miei_rush) ?></span>
+        </div>
+        <?php if (empty($miei_rush)): ?>
+        <div style="padding:32px;text-align:center;color:var(--muted-foreground);font-size:14px;">
+            Nessun rush completato ancora.
+        </div>
+        <?php else: ?>
+        <table>
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Consegna</th>
+                    <th>Classe</th>
+                    <th>Voto</th>
+                    <th class="col-80"></th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($miei_rush as $r):
+                $voto = $r['voto'] ?? '';
+                $badgeClass = $voto ? 'badge-'.$voto : 'badge-attesa';
+                $votoLabel  = $voto ? ucfirst($voto) : 'In valutazione';
+            ?>
+            <tr>
+                <td style="white-space:nowrap;color:var(--muted-foreground);font-size:13px;"><?= date('d/m/Y H:i', strtotime($r['created_at'])) ?></td>
+                <td>
+                    <span style="font-weight:600;"><?= sanitize($r['domanda_nome']) ?></span>
+                    <span class="badge badge-host" style="margin-left:6px;font-size:10px;"><?= sanitize($r['linguaggio_nome']) ?></span>
+                </td>
+                <td style="color:var(--muted-foreground);font-size:13px;"><?= sanitize($r['anno'].$r['sezione'].' '.$r['indirizzo']) ?></td>
+                <td><span class="badge <?= $badgeClass ?>"><?= $votoLabel ?></span></td>
+                <td>
+                    <a href="/CodeRush/pages/risultati.php?id=<?= $r['id'] ?>" class="btn btn-sm btn-outline">Rivedi →</a>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
 </main>
 <script src="/CodeRush/js/script.js"></script>
 <script>

@@ -160,3 +160,26 @@
 }
 
 .pwd-strength { margin-top: 10px; display: none; }
+
+.rush-history-card {
+    margin-top: 24px;
+    animation: fade-up 0.45s ease-out 0.2s both;
+}
+
+.rush-history-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rush-history-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted-foreground);
+}
+
+.col-80 { width: 80px; }
