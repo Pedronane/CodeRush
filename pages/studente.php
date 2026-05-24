@@ -16,6 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cognome  = trim($_POST['cognome']  ?? '');
     $password = $_POST['password']      ?? '';
 
+    // Aggiornamento parziale: solo i campi compilati e davvero modificati entrano nella query
     $updates = []; $params = [];
 
     if (!empty($nome) && $nome !== $studente['nome']) {

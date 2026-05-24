@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
 
+// Connessione PDO condivisa: la static la crea una sola volta per richiesta
 function getDB() {
     static $pdo = null;
     if ($pdo === null) {

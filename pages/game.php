@@ -7,6 +7,7 @@ $partita_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $partita    = $partita_id > 0 ? getPartitaById($partita_id) : null;
 if (!$partita) { header('Location: /CodeRush/'); exit(); }
 
+// La pagina di gioco serve solo per lettura/scrittura: gli altri stati hanno una loro vista
 if ($partita['stato'] === 'attesa') {
     header('Location: '.(isHost() ? '/CodeRush/pages/lobby.php?id='.$partita_id : '/CodeRush/pages/waiting.php?partita_id='.$partita_id));
     exit();
@@ -25,6 +26,7 @@ if (isStudent()) {
     $slotId = $partecipazione['id'];
     if ($partita['stato'] === 'scrittura') {
         $myTurno = getTurnoCorrente($partita_id, $_SESSION['user_id'], $partita['round_corrente']);
+        // Codice ricevuto dal compagno precedente, da continuare in questo turno
         if ($myTurno) $codicePrecedente = getPreviousCodice($myTurno['slot_id'], $partita['round_corrente']);
     }
 }
@@ -236,6 +238,7 @@ function startTimer() {
         if (timerSeconds > 0) { timerSeconds--; updateTimerDisplay(); }
         if (timerSeconds <= 0) {
             clearInterval(timerInterval);
+            // Tempo scaduto: consegna automatica del codice non ancora inviato
             if (!IS_HOST && STATO_INIT === 'scrittura') {
                 var btn = document.getElementById('btnSubmit');
                 if (btn && !btn.disabled) submitCode(null);
@@ -245,6 +248,7 @@ function startTimer() {
     }, 1000);
 }
 
+// Allinea il client allo stato del server: ricarica se fase/round sono cambiati
 function pollGameState() {
     fetch('/CodeRush/api/api.php?action=game_state&id='+PARTITA_ID)
         .then(function(r){return r.json();})

@@ -5,6 +5,7 @@ if (!isHost()) { header('Location: /CodeRush/login.php'); exit(); }
 
 $partita_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $partita    = $partita_id > 0 ? getPartitaById($partita_id) : null;
+// Solo l'host proprietario può vedere la lobby; se è già partita si va al gioco
 if (!$partita || $partita['host_id'] != $_SESSION['user_id']) { header('Location: /CodeRush/pages/rush.php'); exit(); }
 if ($partita['stato'] !== 'attesa') { header('Location: /CodeRush/pages/game.php?id='.$partita_id); exit(); }
 
@@ -98,6 +99,7 @@ $pageTitle = 'Lobby — '.$partita['codice_accesso'];
 var PARTITA_ID = <?= $partita_id ?>;
 var currentStudents = [];
 
+// Polling: aggiorna la lista studenti e porta al gioco quando l'host avvia
 function pollLobby() {
     fetch('/CodeRush/api/api.php?action=lobby_state&id='+PARTITA_ID)
         .then(function(r){ return r.json(); })

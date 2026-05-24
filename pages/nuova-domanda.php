@@ -10,8 +10,10 @@ $editId  = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $domanda = null;
 $isEdit  = false;
 
+// Stessa pagina per creare e modificare: la presenza di $editId distingue i due casi
 if ($editId > 0) {
     $domanda = getDomandaById($editId);
+    // Si può modificare solo una consegna di cui si è proprietari
     if ($domanda && $domanda['host_id'] == $_SESSION['user_id']) {
         $isEdit = true;
     } else {

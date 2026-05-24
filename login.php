@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . '/includes/functions.php';
+// Chi è già loggato non vede la pagina di login
 if (isLoggedIn()) { header('Location: /CodeRush/'); exit(); }
 
 $error = '';

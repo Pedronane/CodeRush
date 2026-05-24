@@ -29,6 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[] = 'Matricola/Username già in uso.';
         } else {
             $ruolo = ($tipo === 'host') ? 'host' : 'studente';
+            // Password salvata sempre come hash, mai in chiaro
             $db->prepare('INSERT INTO users (login_id,nome,cognome,password,ruolo) VALUES (?,?,?,?,?)')
                ->execute([$login_id,$nome,$cognome,password_hash($password,PASSWORD_DEFAULT),$ruolo]);
             $success = 'Account '.sanitize($nome.' '.$cognome).' creato con successo.';

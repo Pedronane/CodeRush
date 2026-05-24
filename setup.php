@@ -36,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
             );
 
+            // PDO::exec esegue una query alla volta: lo schema va spezzato sui ';'
             $sql = file_get_contents(__DIR__ . '/db/schema.sql');
             $statements = array_filter(array_map('trim', explode(';', $sql)));
             foreach ($statements as $stmt) {

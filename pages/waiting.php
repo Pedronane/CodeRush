@@ -9,6 +9,7 @@ $partita_id = isset($_GET['partita_id']) ? (int)$_GET['partita_id'] : 0;
 $error      = '';
 $partita    = null;
 
+// Due modi di arrivare qui: con un partita_id (già iscritto) o con un codice da inserire
 if ($partita_id > 0) {
     $partita = getPartitaById($partita_id);
     if (!$partita) { $error = 'Partita non trovata.'; $partita = null; }
@@ -26,6 +27,7 @@ if ($partita_id > 0) {
         $partita    = getPartitaById($partitaRaw['id']);
         $partita_id = $partita['id'];
         $exist = getPartecipazione($partita_id, $_SESSION['user_id']);
+        // Iscrizione: assegna il primo slot libero (gli slot numerano la catena di turni)
         if (!$exist) {
             $stmtSlot = $db->prepare('SELECT MAX(slot_number) AS mx FROM partecipazioni WHERE partita_id=?');
             $stmtSlot->execute([$partita_id]);
